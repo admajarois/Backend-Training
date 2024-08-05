@@ -5,6 +5,7 @@ const AlbumsService = require('./services/inMemory/AlbumsService');
 const SongsService = require('./services/inMemory/SongsService');
 const AlbumsValidator = require('./validator/albums');
 const SongsValidator = require('./validator/songs');
+const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
     const albumsService = new AlbumsService();
@@ -33,7 +34,21 @@ const init = async () => {
             service: songsService,
             validator: SongsValidator,
         }
-    })
+    });
+
+    server.ext('onPreResponse', (request, h) => {
+        const { response } = request;
+        if (response instanceof ClientError) {
+            const newResponse = h.response({
+                status: 'fail',
+                message: response.message,
+            });
+
+            newResponse.code(response.statusCode);
+            return newResponse;
+        }
+        return h.continue;
+    });
 
     await server.start();
     console.log(`Server running on ${server.info.uri}`);
