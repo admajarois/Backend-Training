@@ -1,8 +1,10 @@
-const { nanoid } = require('nanoid');
+const ClientError = require("../../exceptions/ClientError");
+
 
 class SongsHandler {
-    constructor(service) {
+    constructor(service, validator) {
         this._service = service;
+        this._validator = validator;
         this.postSongHandler = this.postSongHandler.bind(this);
         this.getSongsHandler = this.getSongsHandler.bind(this);
         this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
@@ -12,10 +14,10 @@ class SongsHandler {
 
     postSongHandler(request, h) {
         try {
-            const  { title, year, genre, performer, duration, albumId } = request.payload;
-            const songId = this._service.addSongs({title, year, genre, performer, duration, albumId});
-            const id = nanoid(16);
+            this._validator.validateSongPayload(request.payload);
 
+            const  { title, year, genre, performer, duration, albumId } = request.payload;
+            const songId = this._service.addSong({title, year, genre, performer, duration, albumId});
             const response = h.response({
                 status: 'success',
                 message: 'Song has been added',
@@ -27,12 +29,21 @@ class SongsHandler {
             response.code(201);
             return response;
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
-              });
-              response.code(400);
-              return response;
+                status: 'error',
+                message: 'Sorry, fail server error.'
+            });
+            response.code(500);
+            console.error(error);
+            return response;
         }
     }
 
@@ -57,17 +68,27 @@ class SongsHandler {
                 },
             };
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
-              });
-            response.code(404);
+                status: 'error',
+                message: 'Sorry, fail server error.'
+            });
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
 
     putSongByIdHandler(request, h) {
         try {
+            this._validator.validateSongPayload(request.payload);
             const { id } = request.params;
 
             this._service.editSongById(id, request.payload);
@@ -76,11 +97,20 @@ class SongsHandler {
                 message: 'Song has updated successfuly.'
             }
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
+                status: 'error',
+                message: 'Sorry, fail server error.'
             });
-            response.code(404);
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
@@ -94,11 +124,20 @@ class SongsHandler {
                 message: 'Song has been deleted.'
             }
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
-              });
-            response.code(404);
+                status: 'error',
+                message: 'Sorry, fail server error.'
+            });
+            response.code(500);
+            console.error(error);
             return response;
         }
     }

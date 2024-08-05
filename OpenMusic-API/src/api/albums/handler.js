@@ -1,6 +1,9 @@
+const ClientError = require("../../exceptions/ClientError");
+
 class AlbumsHandler {
-    constructor(service) {
+    constructor(service, validator) {
         this._service = service;
+        this._validator = validator;
         this.postAlbumHandler = this.postAlbumHandler.bind(this);
         this.getAlbumsHandler = this.getAlbumsHandler.bind(this);
         this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
@@ -10,8 +13,11 @@ class AlbumsHandler {
 
     postAlbumHandler(request, h) {
         try {
+            this._validator.validateAlbumPayload(request.payload);
             const { name, year } = request.payload;
             const albumId = this._service.addAlbum({ name, year });
+            console.log(albumId);
+            
 
             const response = h.response({
                 status: 'success',
@@ -24,11 +30,20 @@ class AlbumsHandler {
             response.code(201);
             return response;
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
+                status: 'error',
+                message: 'Sorry, fail server error.'
             });
-            response.code(400);
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
@@ -47,16 +62,6 @@ class AlbumsHandler {
         try {
             const { id } = request.params;
             const album = this._service.getAlbumById(id);
-
-            if (!album) {
-                const response = h.response({
-                    status: 'fail',
-                    message: 'Album not found',
-                });
-                response.code(404);
-                return response;
-            }
-
             return {
                 status: 'success',
                 data: {
@@ -64,17 +69,28 @@ class AlbumsHandler {
                 },
             };
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
+                status: 'error',
+                message: 'Sorry, fail server error.'
             });
-            response.code(400);
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
 
     putAlbumByIdHandler(request, h) {
         try {
+            this._validator.validateAlbumPayload(request.payload);
+
             const { id } = request.params;
             const { name, year } = request.payload;
             this._service.editAlbumById(id, { name, year });
@@ -84,11 +100,20 @@ class AlbumsHandler {
                 message: 'Album has been updated',
             };
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
+                status: 'error',
+                message: 'Sorry, fail server error.'
             });
-            response.code(400);
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
@@ -103,11 +128,20 @@ class AlbumsHandler {
                 message: 'Album has been deleted',
             };
         } catch (error) {
+            if (error instanceof ClientError) {
+                const response = h.response({
+                    status: 'fail',
+                    message: error.message,
+                });
+                response.code(error.statusCode);
+                return response;  
+            }
             const response = h.response({
-                status: 'fail',
-                message: error.message,
+                status: 'error',
+                message: 'Sorry, fail server error.'
             });
-            response.code(400);
+            response.code(500);
+            console.error(error);
             return response;
         }
     }
