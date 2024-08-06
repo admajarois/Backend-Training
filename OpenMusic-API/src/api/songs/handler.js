@@ -1,54 +1,33 @@
-const ClientError = require("../../exceptions/ClientError");
+const autoBind = require("auto-bind");
 
 
 class SongsHandler {
     constructor(service, validator) {
         this._service = service;
         this._validator = validator;
-        this.postSongHandler = this.postSongHandler.bind(this);
-        this.getSongsHandler = this.getSongsHandler.bind(this);
-        this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
-        this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
-        this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
+        autoBind(this);
     }
 
-    postSongHandler(request, h) {
-        try {
-            this._validator.validateSongPayload(request.payload);
+    async postSongHandler(request, h) {
+        this._validator.validateSongPayload(request.payload);
 
-            const  { title, year, genre, performer, duration, albumId } = request.payload;
-            const songId = this._service.addSong({title, year, genre, performer, duration, albumId});
-            const response = h.response({
-                status: 'success',
-                message: 'Song has been added',
-                data: {
-                    songId,
-                },
-            });
+        const  { title, year, genre, performer, duration, albumId } = request.payload;
+        const songId = await this._service.addSong({title, year, genre, performer, duration, albumId});
+        const response = h.response({
+            status: 'success',
+            message: 'Song has been added',
+            data: {
+                songId,
+            },
+        });
 
-            response.code(201);
-            return response;
-        } catch (error) {
-            if (error instanceof ClientError) {
-                const response = h.response({
-                    status: 'fail',
-                    message: error.message,
-                });
-                response.code(error.statusCode);
-                return response;  
-            }
-            const response = h.response({
-                status: 'error',
-                message: 'Sorry, fail server error.'
-            });
-            response.code(500);
-            console.error(error);
-            return response;
-        }
+        response.code(201);
+        return response;
     }
 
-    getSongsHandler() {
-        const songs = this._service.getSongs();
+    async getSongsHandler(request, h) {
+        const {title, performer} = request.query;
+        const songs = await this._service.getSongs({ title, performer});
         return {
           status: 'success',
           data: {
@@ -57,88 +36,34 @@ class SongsHandler {
         };
     }
 
-    getSongByIdHandler(request, h) {
-        try {
-            const { id } = request.params;
-            const song = this._service.getSongById(id);
-            return {
-                status: 'success',
-                data: {
-                    song,
-                },
-            };
-        } catch (error) {
-            if (error instanceof ClientError) {
-                const response = h.response({
-                    status: 'fail',
-                    message: error.message,
-                });
-                response.code(error.statusCode);
-                return response;  
-            }
-            const response = h.response({
-                status: 'error',
-                message: 'Sorry, fail server error.'
-            });
-            response.code(500);
-            console.error(error);
-            return response;
+    async getSongByIdHandler(request, h) {
+        const { id } = request.params;
+        const song = await this._service.getSongById(id);
+        return {
+            status: 'success',
+            data: {
+                song,
+            },
+        };
+    }
+
+    async putSongByIdHandler(request, h) {
+        this._validator.validateSongPayload(request.payload);
+        const { id } = request.params;
+
+        await this._service.editSongById(id, request.payload);
+        return {
+            status: 'success',
+            message: 'Song has updated successfuly.'
         }
     }
 
-    putSongByIdHandler(request, h) {
-        try {
-            this._validator.validateSongPayload(request.payload);
-            const { id } = request.params;
-
-            this._service.editSongById(id, request.payload);
-            return {
-                status: 'success',
-                message: 'Song has updated successfuly.'
-            }
-        } catch (error) {
-            if (error instanceof ClientError) {
-                const response = h.response({
-                    status: 'fail',
-                    message: error.message,
-                });
-                response.code(error.statusCode);
-                return response;  
-            }
-            const response = h.response({
-                status: 'error',
-                message: 'Sorry, fail server error.'
-            });
-            response.code(500);
-            console.error(error);
-            return response;
-        }
-    }
-
-    deleteSongByIdHandler(request, h) {
-        try {
-            const { id } = request.params;
-            this._service.deleteSongById(id);
-            return {
-                status: 'success',
-                message: 'Song has been deleted.'
-            }
-        } catch (error) {
-            if (error instanceof ClientError) {
-                const response = h.response({
-                    status: 'fail',
-                    message: error.message,
-                });
-                response.code(error.statusCode);
-                return response;  
-            }
-            const response = h.response({
-                status: 'error',
-                message: 'Sorry, fail server error.'
-            });
-            response.code(500);
-            console.error(error);
-            return response;
+    async deleteSongByIdHandler(request, h) {
+        const { id } = request.params;
+        await this._service.deleteSongById(id);
+        return {
+            status: 'success',
+            message: 'Song has been deleted.'
         }
     }
 }
