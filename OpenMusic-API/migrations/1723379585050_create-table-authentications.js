@@ -1,5 +1,3 @@
-const { password } = require('pg/lib/defaults');
-
 /**
  * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
  */
@@ -11,24 +9,21 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('users', {
-        id: {
-            type: 'varchar(50)',
-            primaryKey: true,
-        },
-        usernamae: {
-            type: 'varchar(50)',
-            unique: true,
-            notNull: true,
-        },
-        password: {
+    pgm.createTable('authentications', {
+        token: {
             type: 'text',
             notNull: true,
         },
-        fullname: {
-            type: 'text',
+        created_at: {
+            type: 'timestamp',
             notNull: true,
+            default: pgm.func('current_timestamp'),
         },
+        updated_at: {
+            type: 'timestamp',
+            notNull: true,
+            default: pgm.func('current_timestamp')
+        }
     });
 };
 
@@ -38,5 +33,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-    pgm.dropTable('users');
+    pgm.dropTable('authentications');
 };
