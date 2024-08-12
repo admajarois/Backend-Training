@@ -2,8 +2,6 @@ const mapDBToAlbumModel = ({
     id,
     name,
     year,
-    created_at,
-    updated_at,
 }) => ({
     id,
     name,
@@ -18,8 +16,6 @@ const mapDBToSongModel = ({
     performer,
     duration,
     album_id,
-    created_at,
-    updated_at,
 }) => ({
     id,
     title,
