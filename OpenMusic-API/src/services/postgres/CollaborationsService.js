@@ -25,7 +25,7 @@ class CollaborationsService {
 
     async deleteCollaboration(playlistId, userId) {
         const query = {
-            text: 'DELETE FROM collaborations WHERE playlist_id = $1',
+            text: 'DELETE FROM collaborations WHERE playlist_id = $1 RETURNING id',
             values: [playlistId, userId],
         };
 
@@ -48,6 +48,8 @@ class CollaborationsService {
             throw new InvariantError('Failed to verify collaboration');
         }
     }
+
+
 }
 
 module.exports = CollaborationsService;

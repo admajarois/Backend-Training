@@ -29,10 +29,11 @@ class PlaylistsService {
 
     async getPlaylists(owner) {
         const query = {
-            text: `SELECT playlists.id, playlists.name, users.username 
-                   FROM playlists 
-                   JOIN users ON users.id = playlists.owner
-                   WHERE playlists.owwner = $1`,
+            text: ` SELECT DISTINCT p.id, p.name, u.username
+            FROM playlists p
+            JOIN users u ON u.id = p.owner
+            LEFT JOIN collaborations c ON p.id = c.playlist_id AND c.user_id = $1
+            WHERE p.owner = $1 OR c.user_id IS NOT NULL`,
             values: [owner],
         };
 
@@ -53,22 +54,57 @@ class PlaylistsService {
         }
     }
 
-    async verifyPlaylistOwner(playlistId, owner) {
-        const query = {
-            text: 'SELECT user_id FROM playlists WHERE id = $1',
+    async verifyDeletePlaylist(playlistId, userId) {
+        const playlistQuery = {
+            text: 'SELECT owner FROM playlists WHERE id = $1',
             values: [playlistId],
         };
-
-        const result = await this._pool.query(query);
-
-        if (!result.rows.length) {
+    
+        const playlistResult = await this._pool.query(playlistQuery);
+    
+        if (!playlistResult.rows.length) {
             throw new NotFoundError('Playlist not found!');
         }
+    
+        const playlist = playlistResult.rows[0];
 
-        const playlist = result.rows[0];
+        if (playlist.owner !== userId) {
+            throw new AuthorizationError("You don't have authorization to delete this playlist!");
+        }
+    }
 
-        if (playlist.user_id !== owner) {
-            throw new AuthorizationError("You don't have authorize of this resource!");
+    async verifyPlaylistOwner(playlistId, userId) {
+        const playlistQuery = {
+            text: 'SELECT id, owner FROM playlists WHERE id = $1',
+            values: [playlistId],
+        };
+    
+        const playlistResult = await this._pool.query(playlistQuery);
+    
+        if (playlistResult.rowCount === 0) {
+            throw new NotFoundError('Playlist not found');
+        }
+    
+        const playlist = playlistResult.rows[0];
+    
+        // Check if the user is the owner or a collaborator
+        const accessQuery = {
+            text: `
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM collaborations
+                    WHERE playlist_id = $1 AND user_id = $2
+                ) AS is_collaborator
+            `,
+            values: [playlistId, userId],
+        };
+    
+        const accessResult = await this._pool.query(accessQuery);
+    
+        const hasAccess = (playlist.owner === userId) || accessResult.rows[0].is_collaborator;
+    
+        if (!hasAccess) {
+            throw new AuthorizationError("You don't have authorization to access this resource!");
         }
     }
 

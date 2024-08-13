@@ -9,18 +9,16 @@ class PlaylistSongsHandler {
         autoBind(this);
     }
 
-    async postPlaylistSongHandler(request, h) {
-        console.log(request);
-        
+    async postPlaylistSongHandler(request, h) {        
         this._validator.validatePlaylistSongPayload(request.payload);
         const { id } = request.params;
         const { songId } = request.payload;
         const { id: credentialId } = request.auth.credentials;
 
         await this._playlistSongsService.verifyPlaylistAccess(id, credentialId);
-        await this._playlistSongsService.verifySongs(songId);
+        await this._playlistSongsService.verifySongs(id, songId);
         await this._playlistSongsService.addSongToPlaylist(id, songId);
-        await this._playlistSongActivitiesService.addActivity(id, songId, credentialId, 'add');
+        await this._activitiesService.addActivity(id, songId, credentialId, 'add');
         
 
         const response = h.response({
@@ -55,7 +53,7 @@ class PlaylistSongsHandler {
 
         await this._playlistSongsService.verifyPlaylistAccess(id, credentialId);
         await this._playlistSongsService.deleteSongFromPlaylist(id, songId);
-        await this._playlistSongActivitiesService.addActivity(id, songId, credentialId, 'delete');
+        await this._activitiesService.addActivity(id, songId, credentialId, 'delete');
 
         return {
             status: 'success',

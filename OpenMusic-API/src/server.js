@@ -40,8 +40,6 @@ const CollaborationsValidator = require('./validator/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 
 /** playlist song activities */
-const playlistSongActivities = require('./api/playlist_song_activities');
-const PlaylistSongActivityValidator = require('./validator/playlist_song_activities');
 const PlaylistSongActivitiesService = require('./services/postgres/PlaylistSongActivitiesService');
 
 
@@ -53,7 +51,7 @@ const init = async () => {
     const playlistsService = new PlaylistsService();
     const playlistSongsService = new PlaylistSongsService();
     const collaborationsService = new CollaborationsService();
-    const playlistSongActivitiesService = new PlaylistSongActivitiesService();
+    const activitiesService = new PlaylistSongActivitiesService();
 
     const server = Hapi.server({
         port: process.env.PORT,
@@ -85,7 +83,7 @@ const init = async () => {
                 id: artifacts.decoded.payload.id,
             },
         }),
-    });
+    });    
 
     await server.register([
         {
@@ -120,7 +118,7 @@ const init = async () => {
             plugin: playlistSongs,
             options: {
                 playlistSongsService,
-                playlistSongActivitiesService,
+                activitiesService,
                 validator: PlaylistSongValidator,
             },
         },
@@ -138,17 +136,10 @@ const init = async () => {
             options: {
                 collaborationsService,
                 playlistsService,
+                usersService,
                 validator: CollaborationsValidator,
             },
         },
-        {
-            plugin: playlistSongActivities,
-            options: {
-                playlistSongActivitiesService,
-                playlistSongsService,
-                validator: PlaylistSongActivityValidator
-            }
-        }
     ]);
 
 

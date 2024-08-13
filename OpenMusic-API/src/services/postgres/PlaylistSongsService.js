@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
+const InvariantError = require('../../exceptions/InvariantError');
 
 class PlaylistSongsService {
     constructor() {
@@ -11,11 +12,13 @@ class PlaylistSongsService {
     async addSongToPlaylist(playlistId, songId) {
         const id = `ps-${nanoid(16)}`;
         const query = {
-            text: 'INSERT INTO playlist_songs VALUES($1, $2, $3)',
+            text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
             values: [id, playlistId, songId],
         };
 
-        await this._pool.query(query);
+        const result = await this._pool.query(query)
+
+        return result.rows[0].id;
     }
 
     async getSongsFromPlaylist(playlistId) {
@@ -63,21 +66,37 @@ class PlaylistSongsService {
     }
 
     async verifyPlaylistOwner(playlistId, owner) {
-        const query = {
+        const playlistQuery = {
             text: 'SELECT owner FROM playlists WHERE id = $1',
             values: [playlistId],
         };
-
-        const result = await this._pool.query(query);
-
-        if (!result.rows.length) {
+    
+        const playlistResult = await this._pool.query(playlistQuery);
+    
+        if (!playlistResult.rows.length) {
             throw new NotFoundError('Playlist not found!');
         }
-
-        const playlist = result.rows[0];
-
-        if (playlist.user_id !== owner) {
-            throw new AuthorizationError("You don't have authorize of this resource!");
+    
+        const playlist = playlistResult.rows[0];
+    
+        // Check if the user is the owner or a collaborator
+        const accessQuery = {
+            text: `
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM collaborations
+                    WHERE playlist_id = $1 AND user_id = $2
+                ) AS is_collaborator
+            `,
+            values: [playlistId, owner],
+        };
+    
+        const accessResult = await this._pool.query(accessQuery);
+    
+        const hasAccess = (playlist.owner === owner) || accessResult.rows[0].is_collaborator;
+    
+        if (!hasAccess) {
+            throw new AuthorizationError("You don't have authorization to access this resource!");
         }
     }
 
@@ -86,17 +105,30 @@ class PlaylistSongsService {
         await this.verifyPlaylistOwner(playlistId, userId);
     }
 
-    async verifySongs(songId) {
-        const query = {
-            text: 'SELECT * FROM songs WHERE id = $1',
-            values: [songId]
+    async verifySongs(playlistId, songId) {
+        const songExistsQuery = {
+            text: 'SELECT 1 FROM songs WHERE id = $1',
+            values: [songId],
         };
-
-        const result = await this._pool.query(query);
-
-        if (!result.rows.length) {
-            throw new NotFoundError('Songs not found!');
+    
+        const songResult = await this._pool.query(songExistsQuery);
+    
+        if (!songResult.rows.length) {
+            throw new NotFoundError('Song not found!');
         }
+    
+        // Then, check if the song is already in the playlist
+        const songInPlaylistQuery = {
+            text: 'SELECT 1 FROM playlist_song WHERE playlist_id = $1 AND song_id = $2',
+            values: [playlistId, songId],
+        };
+    
+        const playlistResult = await this._pool.query(songInPlaylistQuery);
+    
+        if (playlistResult.rows.length > 0) {
+            throw new InvariantError('Song already exists in this playlist, you cannot add twice')
+        }
+    
     }
 }
 

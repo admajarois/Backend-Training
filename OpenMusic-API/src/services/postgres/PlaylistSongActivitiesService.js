@@ -14,7 +14,7 @@ class PlaylistSongActivitiesService {
         const created_at = new Date().toISOString();
         const updated_at = created_at;
         const query = {
-            text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6, $7, $8)',
+            text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
             values: [id, playlistId, songId, userId, action, time, created_at, updated_at],
         };
 
