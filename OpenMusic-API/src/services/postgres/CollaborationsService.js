@@ -1,6 +1,7 @@
 const { nanoid } = require("nanoid");
 const { Pool } = require("pg");
 const InvariantError = require("../../exceptions/InvariantError");
+const AuthorizationError = require("../../exceptions/AuthorizationError");
 
 class CollaborationsService {
     constructor() {
@@ -23,10 +24,10 @@ class CollaborationsService {
         return result.rows[0].id;
     }
 
-    async deleteCollaboration(playlistId, userId) {
+    async deleteCollaboration(playlistId) {
         const query = {
             text: 'DELETE FROM collaborations WHERE playlist_id = $1 RETURNING id',
-            values: [playlistId, userId],
+            values: [playlistId],
         };
 
         const result = await this._pool.query(query);
@@ -36,16 +37,20 @@ class CollaborationsService {
         }
     }
 
-    async verifyCollaborator(playlistId, userId) {
+    async verifyCollaboratorDeletion(playlistId, userId) {
         const query = {
-            text: 'SELECT * FROM collaborations  WHERE playlist_id = $1 AND user_id = $2',
-            values: [playlistId, userId],
+            text: 'SELECT * FROM playlists  WHERE id = $1',
+            values: [playlistId],
         };
 
         const result = await this._pool.query(query);
 
         if (!result.rows.length) {
-            throw new InvariantError('Failed to verify collaboration');
+            throw new InvariantError('Cannot find playlist');
+        }
+
+        if (result.rows[0].owner !== userId) {
+            throw new AuthorizationError('You do not have authorize to delete collaboration');
         }
     }
 
