@@ -119,7 +119,7 @@ class PlaylistSongsService {
     
         // Then, check if the song is already in the playlist
         const songInPlaylistQuery = {
-            text: 'SELECT 1 FROM playlist_song WHERE playlist_id = $1 AND song_id = $2',
+            text: 'SELECT 1 FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2',
             values: [playlistId, songId],
         };
     

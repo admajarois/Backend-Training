@@ -42,7 +42,10 @@ class PlaylistSongActivitiesService {
 
         const result = await this._pool.query(query);
 
-        return result.rows;
+        return {
+            playlistId,
+            activities: result.rows
+        };
     }
 }
 
