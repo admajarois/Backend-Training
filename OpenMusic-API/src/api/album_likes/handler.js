@@ -12,15 +12,16 @@ class AlbumLikesHandler {
         const { id: albumId } = request.params;
         const { id: userId } = request.auth.credentials;
 
-        // Validate the album ID (optional, based on your implementation)
-        await this._validator.validateAlbumId(albumId);
+        // this._validator.validateAlbumLikePayload(request.auth.credentials);
 
-        // Service method to add a like to the album
-        await this._service.addLikeToAlbum({ albumId, userId });
+        const like = await this._service.addLikeToAlbum({ albumId, userId });
 
         const response = h.response({
             status: 'success',
             message: 'Album liked successfully',
+            data: {
+                like
+            }
         });
         response.code(201);
         return response;
@@ -29,11 +30,8 @@ class AlbumLikesHandler {
     async getLikeAlbumByIdHandler(request, h) {
         const { id: albumId } = request.params;
 
-        // Validate the album ID (optional, based on your implementation)
-        await this._validator.validateAlbumId(albumId);
-
         // Service method to get the number of likes for the album
-        const { likes, isLiked } = await this._service.getAlbumLikes(albumId);
+        const likes = await this._service.getAlbumLikes(albumId);
 
         const response = h.response({
             status: 'success',
@@ -42,7 +40,6 @@ class AlbumLikesHandler {
             },
         });
         response.code(200);
-        response.header('X-Album-Is-Liked', isLiked ? 'true' : 'false');
         return response;
     }
 
@@ -51,7 +48,6 @@ class AlbumLikesHandler {
         const { id: userId } = request.auth.credentials;
 
         // Validate the album ID (optional, based on your implementation)
-        await this._validator.validateAlbumId(albumId);
 
         // Service method to remove a like from the album
         await this._service.removeLikeFromAlbum({ albumId, userId });
