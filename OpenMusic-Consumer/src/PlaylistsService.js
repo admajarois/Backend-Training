@@ -8,9 +8,9 @@ class PlaylistsService {
 
     async getPlaylists(userId) {
         const query = {
-            text: `SEELCT playlists.* FROM playlists
+            text: `SELECT playlists.* FROM playlists
             LEFT JOIN collaborations ON collaborations.playlist_id = playlists.id
-            WHERE playlists.owner = $1 OR collborations.user_id = $1 GROUP BY playlists.id`,
+            WHERE playlists.owner = $1 OR collaborations.user_id = $1 GROUP BY playlists.id`,
             values: [userId],
         };
         const result = await this._pool.query(query);
