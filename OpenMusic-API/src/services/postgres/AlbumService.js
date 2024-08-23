@@ -43,6 +43,12 @@ class AlbumsService {
             throw new NotFoundError("Album not found");
         }
         const album = result.rows.map(mapDBToAlbumModel)[0];
+        if (album.cover) {
+            album.coverUrl = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${album.cover}`;
+        }else {
+            album.coverUrl = null;
+        }
+        delete album.cover;
         const songsQuery = {
             text: 'SELECT id, title, performer FROM songs WHERE album_id = $1',
             values: [id],
@@ -65,7 +71,7 @@ class AlbumsService {
      
         const result = await this._pool.query(query);
         if (!result.rows.length) {
-            throw new NotFoundError('Failed to update album. Id bot found');
+            throw new NotFoundError('Failed to update album. Id not found');
         }
     }
 
@@ -79,6 +85,18 @@ class AlbumsService {
         if (!result.rows.length) {
             throw new NotFoundError('Failed to delete album. Id not found');
         }
+    }
+
+    async updateAlbumCover(albumId, filename) {
+        // Update the album record in the database with the new cover filename
+        const query = 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id';
+        const result = await this._database.query(query, [filename, albumId]);
+    
+        if (!result.rows.length) {
+          throw new NotFoundError('Failed to update album cover, album not found');
+        }
+    
+        return result.rows[0].id;
     }
 }
 

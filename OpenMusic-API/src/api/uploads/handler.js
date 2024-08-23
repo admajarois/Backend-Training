@@ -3,8 +3,9 @@ const autoBind = require('auto-bind');
 
 
 class UploadsHandler {
-    constructor(service, validator) {
-        this._service = service;
+    constructor(storageService, albumsService, validator) {
+        this._storageService = storageService;
+        this._albumsService = albumsService;
         this._validator = validator;
 
         autoBind(this);
@@ -12,10 +13,16 @@ class UploadsHandler {
 
     async postUploadCoverHandler(request, h) {
         const { data } = request.payload;
+        
+        const { id: albumId } = request.params
+        const album = await this._albumsService.getAlbumById(albumId)
+        if (album.cover) {
+            await this._storageService.deleteFile(album.cover)
+        }
         this._validator.validateAlbumCovers(data.hapi.headers);
 
-        const filename = await this._service.writeFile(data, data.hapi);
-
+        const filename = await this._storageService.writeFile(data, data.hapi);
+        await this._albumsService.updateAlbumCover(albumId, filename);
         const response = h.response({
             status: 'success',
             data: {
