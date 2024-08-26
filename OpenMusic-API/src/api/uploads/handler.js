@@ -1,4 +1,5 @@
 const autoBind = require('auto-bind');
+const path = require('path');
 
 
 
@@ -12,22 +13,22 @@ class UploadsHandler {
     }
 
     async postUploadCoverHandler(request, h) {
-        const { data } = request.payload;
+        console.log('Received payload:', request.payload);
+        const { cover } = request.payload;
         
         const { id: albumId } = request.params
         const album = await this._albumsService.getAlbumById(albumId)
-        if (album.cover) {
-            await this._storageService.deleteFile(album.cover)
+        if (album.coverUrl) {
+            const filename = path.basename(album.coverUrl);
+            await this._storageService.deleteFile(filename)
         }
-        this._validator.validateAlbumCovers(data.hapi.headers);
+        this._validator.validateAlbumCovers(cover.hapi.headers);
 
-        const filename = await this._storageService.writeFile(data, data.hapi);
+        const filename = await this._storageService.writeFile(cover, cover.hapi);
         await this._albumsService.updateAlbumCover(albumId, filename);
         const response = h.response({
             status: 'success',
-            data: {
-                fileLocation: `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`,
-            },
+            message: 'Cover has uploaded successfuly',
         });
         response.code(201);
         return response;

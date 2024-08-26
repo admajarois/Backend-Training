@@ -89,8 +89,11 @@ class AlbumsService {
 
     async updateAlbumCover(albumId, filename) {
         // Update the album record in the database with the new cover filename
-        const query = 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id';
-        const result = await this._database.query(query, [filename, albumId]);
+        const query = {
+            text:'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
+            values: [filename, albumId],
+        };
+        const result = await this._pool.query(query);
     
         if (!result.rows.length) {
           throw new NotFoundError('Failed to update album cover, album not found');
