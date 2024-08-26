@@ -22,14 +22,21 @@ class AlbumLikesService {
         if (!result.rows[0].id) {
             throw new InvariantError('Cannot add like this album')
         }
-        await this._cacheService.delete(`likes:${userId}`);
+        await this._cacheService.delete(`likes:${albumId}`);
         return result.rows[0].id;
     }
 
     async getAlbumLikes(albumId) {
         try {
             const result = await this._cacheService.get(`likes:${albumId}`);
-            return JSON.parse(result);
+            if (result) {
+                const parsedResult = JSON.parse(result);
+                return {
+                    data: parsedResult.rowCount,
+                    source: 'cache'
+                }
+            }
+            throw new Error('Cache miss');
         } catch (error) {
             await this.verifyExistingAlbum(albumId)
             const query = {
@@ -37,8 +44,12 @@ class AlbumLikesService {
                 values: [albumId],
             };
             const result = await this._pool.query(query);
+            const likesCount = result.rowCount;
             await this._cacheService.set(`likes:${albumId}`, JSON.stringify(result))
-            return result.rowCount;
+            return {
+                data: likesCount,
+                source: 'database'
+            };
         }
     }
 
@@ -52,7 +63,7 @@ class AlbumLikesService {
             throw new NotFoundError('Failed to delete like, id not found.')
         }
 
-        await this._cacheService.delete(`likes:${userId}`);
+        await this._cacheService.delete(`likes:${albumId}`);
     }
 
     async verifyExistingAlbum(albumId, userId = null) {

@@ -29,9 +29,9 @@ class AlbumLikesHandler {
 
     async getLikeAlbumByIdHandler(request, h) {
         const { id: albumId } = request.params;
+        const { data: likes, source } = await this._service.getAlbumLikes(albumId);
 
         // Service method to get the number of likes for the album
-        const likes = await this._service.getAlbumLikes(albumId);
 
         const response = h.response({
             status: 'success',
@@ -39,6 +39,7 @@ class AlbumLikesHandler {
                 likes,
             },
         });
+        response.header('X-Data-Source', source);
         response.code(200);
         return response;
     }
