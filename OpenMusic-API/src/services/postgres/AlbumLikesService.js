@@ -6,9 +6,10 @@ const InvariantError = require("../../exceptions/InvariantError");
 
 
 class AlbumLikesService {
-    constructor(albumsService) {
+    constructor(albumsService, cacheService) {
         this._pool = new Pool();
         this._albumsService = albumsService;
+        this._cacheService = cacheService;
     }
     async addLikeToAlbum({ albumId, userId }) {
         await this.verifyExistingAlbum(albumId, userId);
@@ -21,17 +22,36 @@ class AlbumLikesService {
         if (!result.rows[0].id) {
             throw new InvariantError('Cannot add like this album')
         }
+        await this._cacheService.delete(`likes:${albumId}`);
         return result.rows[0].id;
     }
 
     async getAlbumLikes(albumId) {
-        await this.verifyExistingAlbum(albumId)
-        const query = {
-            text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
-            values: [albumId],
-        };
-        const result = await this._pool.query(query);
-        return result.rowCount;
+        try {
+            const result = await this._cacheService.get(`likes:${albumId}`);
+            if (result) {
+                const parsedResult = JSON.parse(result);
+                return {
+                    data: parsedResult.rowCount,
+                    source: 'cache'
+                }
+            }
+            throw new Error('Cache miss');
+        } catch (error) {
+            console.log('Cache miss or error:', error.message);
+            await this.verifyExistingAlbum(albumId)
+            const query = {
+                text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
+                values: [albumId],
+            };
+            const result = await this._pool.query(query);
+            const likesCount = result.rowCount;
+            await this._cacheService.set(`likes:${albumId}`, JSON.stringify(result))
+            return {
+                data: likesCount,
+                source: 'database'
+            };
+        }
     }
 
     async removeLikeFromAlbum({ albumId, userId }) {
@@ -43,6 +63,8 @@ class AlbumLikesService {
         if (result.rowCount === 0) {
             throw new NotFoundError('Failed to delete like, id not found.')
         }
+
+        await this._cacheService.delete(`likes:${albumId}`);
     }
 
     async verifyExistingAlbum(albumId, userId = null) {
