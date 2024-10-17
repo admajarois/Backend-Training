@@ -23,6 +23,11 @@ const AuthenticationRepository = require('../Domains/authentications/Authenticat
 const AuthenticationRepositoryPostgres = require('./repository/AuthenticationRepositoryPostgres');
 const LogoutUserUseCase = require('../Applications/use_case/LogoutUserUseCase');
 const RefreshAuthenticationUseCase = require('../Applications/use_case/RefreshAuthenticationUseCase');
+const AddThreadUseCase = require('../Applications/use_case/AddThreadUseCase');
+const GetThreadByIdUseCase = require('../Applications/use_case/GetThreadByIdUseCase');
+const PutThreadByIdUseCase = require('../Applications/use_case/PutThreadByIdUseCase');
+const DeleteThreadByIdUseCase = require('../Applications/use_case/DeleteThreadByIdUseCase');
+const GetThreadsUseCase = require('../Applications/use_case/GetThreadsUseCase');
 
 // creating container
 const container = createContainer();
@@ -152,6 +157,72 @@ container.register([
       ],
     },
   },
+  {
+    key: AddThreadUseCase.name,
+    Class: AddThreadUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetThreadByIdUseCase.name,
+    Class: GetThreadByIdUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: PutThreadByIdUseCase.name,
+    Class: PutThreadByIdUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: DeleteThreadByIdUseCase.name,
+    Class: DeleteThreadByIdUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetThreadsUseCase.name,
+    Class: GetThreadsUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  
 ]);
 
 module.exports = container;
