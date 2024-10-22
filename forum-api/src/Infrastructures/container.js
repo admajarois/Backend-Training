@@ -10,8 +10,10 @@ const pool = require('./database/postgres/pool');
 
 // service (repository, helper, manager, etc)
 const UserRepository = require('../Domains/users/UserRepository');
+const ThreadRepository = require('../Domains/threads/ThreadRepository');
 const PasswordHash = require('../Applications/security/PasswordHash');
 const UserRepositoryPostgres = require('./repository/UserRepositoryPostgres');
+const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
 const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 
 // use case
@@ -23,10 +25,10 @@ const AuthenticationRepository = require('../Domains/authentications/Authenticat
 const AuthenticationRepositoryPostgres = require('./repository/AuthenticationRepositoryPostgres');
 const LogoutUserUseCase = require('../Applications/use_case/user/LogoutUserUseCase');
 const RefreshAuthenticationUseCase = require('../Applications/use_case/user/RefreshAuthenticationUseCase');
-const AddThreadUseCase = require('../Applications/use_case/AddThreadUseCase');
-const GetThreadByIdUseCase = require('../Applications/use_case/GetThreadByIdUseCase');
-const PutThreadByIdUseCase = require('../Applications/use_case/PutThreadByIdUseCase');
-const DeleteThreadByIdUseCase = require('../Applications/use_case/DeleteThreadByIdUseCase');
+const AddThreadUseCase = require('../Applications/use_case/thread/AddThreadUseCase');
+const DetailThreadUseCase = require('../Applications/use_case/thread/DetailThreadUseCase');
+const UpdateThreadUseCase = require('../Applications/use_case/thread/UpdateThreadUseCase');
+const DeleteThreadUseCase = require('../Applications/use_case/thread/DeleteThreadUseCase');
 
 // creating container
 const container = createContainer();
@@ -184,8 +186,8 @@ container.register([
     },
   },
   {
-    key: GetThreadByIdUseCase.name,
-    Class: GetThreadByIdUseCase,
+    key: DetailThreadUseCase.name,
+    Class: DetailThreadUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [
@@ -197,8 +199,8 @@ container.register([
     },
   },
   {
-    key: PutThreadByIdUseCase.name,
-    Class: PutThreadByIdUseCase,
+    key: UpdateThreadUseCase.name,
+    Class: UpdateThreadUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [
@@ -210,8 +212,8 @@ container.register([
     },
   },
   {
-    key: DeleteThreadByIdUseCase.name,
-    Class: DeleteThreadByIdUseCase,
+    key: DeleteThreadUseCase.name,
+    Class: DeleteThreadUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [

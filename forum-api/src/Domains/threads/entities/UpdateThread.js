@@ -7,8 +7,8 @@ class UpdateThread {
     this.body = body;
   }
 
-  _verifyPayload({ title, body }) {
-    if (!title || !body) {
+  _verifyPayload({ id, title, body }) {
+    if ( !title || !body) {
       throw new Error('UPDATE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 

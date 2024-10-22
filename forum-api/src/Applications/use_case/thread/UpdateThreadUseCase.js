@@ -1,4 +1,4 @@
-const UpdateThread = require('../../Domains/threads/entities/UpdateThread');
+const UpdateThread = require('../../../Domains/threads/entities/UpdateThread');
 
 class UpdateThreadUseCase {
   constructor({ threadRepository, threadValidator }) {

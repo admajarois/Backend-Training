@@ -1,4 +1,4 @@
-const DeleteThread = require('../../Domains/threads/entities/DeleteThread');
+const DeleteThread = require('../../../Domains/threads/entities/DeleteThread');
 
 class DeleteThreadUseCase {
   constructor({ threadRepository, threadValidator }) {
