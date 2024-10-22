@@ -15,19 +15,18 @@ const UserRepositoryPostgres = require('./repository/UserRepositoryPostgres');
 const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 
 // use case
-const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
+const AddUserUseCase = require('../Applications/use_case/user/AddUserUseCase');
 const AuthenticationTokenManager = require('../Applications/security/AuthenticationTokenManager');
 const JwtTokenManager = require('./security/JwtTokenManager');
-const LoginUserUseCase = require('../Applications/use_case/LoginUserUseCase');
+const LoginUserUseCase = require('../Applications/use_case/user/LoginUserUseCase');
 const AuthenticationRepository = require('../Domains/authentications/AuthenticationRepository');
 const AuthenticationRepositoryPostgres = require('./repository/AuthenticationRepositoryPostgres');
-const LogoutUserUseCase = require('../Applications/use_case/LogoutUserUseCase');
-const RefreshAuthenticationUseCase = require('../Applications/use_case/RefreshAuthenticationUseCase');
+const LogoutUserUseCase = require('../Applications/use_case/user/LogoutUserUseCase');
+const RefreshAuthenticationUseCase = require('../Applications/use_case/user/RefreshAuthenticationUseCase');
 const AddThreadUseCase = require('../Applications/use_case/AddThreadUseCase');
 const GetThreadByIdUseCase = require('../Applications/use_case/GetThreadByIdUseCase');
 const PutThreadByIdUseCase = require('../Applications/use_case/PutThreadByIdUseCase');
 const DeleteThreadByIdUseCase = require('../Applications/use_case/DeleteThreadByIdUseCase');
-const GetThreadsUseCase = require('../Applications/use_case/GetThreadsUseCase');
 
 // creating container
 const container = createContainer();
@@ -77,6 +76,20 @@ container.register([
       dependencies: [
         {
           concrete: Jwt.token,
+        },
+      ],
+    },
+  },
+  {
+    key: ThreadRepository.name,
+    Class: ThreadRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
         },
       ],
     },
@@ -157,7 +170,7 @@ container.register([
       ],
     },
   },
-  {
+  { 
     key: AddThreadUseCase.name,
     Class: AddThreadUseCase,
     parameter: {
@@ -209,20 +222,7 @@ container.register([
       ],
     },
   },
-  {
-    key: GetThreadsUseCase.name,
-    Class: GetThreadsUseCase,
-    parameter: {
-      injectType: 'destructuring',
-      dependencies: [
-        {
-          name: 'threadRepository',
-          internal: ThreadRepository.name,
-        },
-      ],
-    },
-  },
-  
 ]);
+
 
 module.exports = container;
