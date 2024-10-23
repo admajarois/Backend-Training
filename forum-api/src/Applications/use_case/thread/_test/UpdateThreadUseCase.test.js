@@ -1,6 +1,5 @@
 const UpdateThread = require('../../../../Domains/threads/entities/UpdateThread');
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
-const ThreadValidator = require('../../../validator/ThreadValidator');
 const UpdateThreadUseCase = require('../UpdateThreadUseCase');
 
 describe('UpdateThreadUseCase', () => {
@@ -19,7 +18,6 @@ describe('UpdateThreadUseCase', () => {
     });
 
     const mockThreadRepository = new ThreadRepository();
-    const mockThreadValidator = new ThreadValidator();
 
     // Mocking
     mockThreadRepository.updateThread = jest.fn().mockImplementation(() => Promise.resolve(mockUpdatedThread));
@@ -27,7 +25,6 @@ describe('UpdateThreadUseCase', () => {
     // Creating use case instance
     const updateThreadUseCase = new UpdateThreadUseCase({
       threadRepository: mockThreadRepository,
-      threadValidator: mockThreadValidator,
     });
     
 
