@@ -3,8 +3,8 @@ const AddThread = require('../AddThread');
 describe('a AddThread entities', () => {
   it('should throw error when payload did not contain needed property', () => {
     const payload = {
-      title: 'Lorem ipsum dolor sit amet',
-      body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      title: false,
+      body: false,
     };
 
     expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
@@ -20,7 +20,6 @@ describe('a AddThread entities', () => {
 
   it('should create addThread object correctly', () => {
     const payload = {
-      id: 'thread-123',
       title: 'Lorem ipsum dolor sit amet',
       body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
     };

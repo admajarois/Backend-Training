@@ -1,7 +1,6 @@
-const AddThread = require('../../../Domains/threads/entities/AddThread');
-const AddedThread = require('../../../Domains/threads/entities/AddedThread');
-const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
-const ThreadValidator = require('../../../Applications/validator/ThreadValidator');
+const AddThread = require('../../../../Domains/threads/entities/AddThread');
+const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
+const ThreadValidator = require('../../../validator/ThreadValidator');
 const AddThreadUseCase = require('../AddThreadUseCase');
 
 describe('AddThreadUseCase', () => {
@@ -12,7 +11,7 @@ describe('AddThreadUseCase', () => {
       body: 'Thread Body',
     };
 
-    const mockAddedThread = new AddedThread({
+    const mockAddedThread = new AddThread({
       id: 'thread-123',
       title: useCasePayload.title,
       body: useCasePayload.body,
@@ -20,7 +19,6 @@ describe('AddThreadUseCase', () => {
 
     const mockThreadRepository = new ThreadRepository();
     const mockThreadValidator = new ThreadValidator();
-
     // Mocking
     mockThreadRepository.addThread = jest.fn().mockImplementation(() => Promise.resolve(mockAddedThread));
 

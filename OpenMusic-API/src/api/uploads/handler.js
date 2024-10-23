@@ -13,7 +13,6 @@ class UploadsHandler {
     }
 
     async postUploadCoverHandler(request, h) {
-        console.log('Received payload:', request.payload);
         const { cover } = request.payload;
         
         const { id: albumId } = request.params

@@ -38,7 +38,6 @@ class AlbumLikesService {
             }
             throw new Error('Cache miss');
         } catch (error) {
-            console.log('Cache miss or error:', error.message);
             await this.verifyExistingAlbum(albumId)
             const query = {
                 text: 'SELECT * FROM user_album_likes WHERE album_id = $1',

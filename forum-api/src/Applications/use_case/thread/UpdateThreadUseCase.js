@@ -7,9 +7,10 @@ class UpdateThreadUseCase {
   }
 
   async execute(useCasePayload) {
+    
     const updateThread = new UpdateThread(useCasePayload);
     this._threadValidator.validateUpdateThreadPayload(updateThread);
-    return this._threadRepository.updateThreadById(updateThread);
+    return this._threadRepository.updateThread(updateThread);
   }
 }
 

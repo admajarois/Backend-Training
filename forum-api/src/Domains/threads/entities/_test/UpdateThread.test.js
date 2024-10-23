@@ -19,6 +19,7 @@ describe('a UpdateThread entities', () => {
 
   it('should create updateThread object correctly when id, title, and body are valid', () => {
     const payload = {
+      id: 'thread-123',
       title: 'Lorem ipsum dolor sit amet',
       body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
     };

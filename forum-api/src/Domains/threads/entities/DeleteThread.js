@@ -1,18 +1,19 @@
 class DeleteThread {
   constructor(payload) {
+    
     this._verifyPayload(payload);
 
-    const { threadId, owner } = payload;
-    this.threadId = threadId;
-    this.owner = owner;
+    const { id } = payload;
+    this.id = id;
   } 
 
-  _verifyPayload({ threadId, owner }) {
-    if (!threadId || !owner) {
+  _verifyPayload({ id }) {
+    
+    if (!id) {
       throw new Error('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof threadId !== 'string' || typeof owner !== 'string') {
+    if (typeof id !== 'string') {
       throw new Error('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

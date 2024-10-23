@@ -2,13 +2,14 @@ class UpdateThread {
   constructor(payload) {
     this._verifyPayload(payload);
 
-    const { title, body } = payload;
+    const { id, title, body } = payload;
+    this.id = id;
     this.title = title;
     this.body = body;
   }
 
   _verifyPayload({ id, title, body }) {
-    if ( !title || !body) {
+    if ( !id || !title || !body) {
       throw new Error('UPDATE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 

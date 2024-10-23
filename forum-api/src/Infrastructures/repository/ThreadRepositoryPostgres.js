@@ -1,4 +1,5 @@
 const ThreadRepository = require('../../Domains/threads/ThreadRepository');
+const InvariantError = require('../../Commons/exceptions/InvariantError');
 
 class ThreadRepositoryPostgres extends ThreadRepository {
   constructor(pool, idGenerator) {
@@ -8,23 +9,12 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async addThread(newThread) {
-    const { title, body, owner } = newThread;
+    const { title, body } = newThread;
     const id = `thread-${this._idGenerator()}`;
 
     const query = {
-      text: 'INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, owner',
-      values: [id, title, body, owner],
-    };
-
-    const result = await this._pool.query(query);
-
-    return new ThreadDetail({ ...result.rows[0] });
-  }
-
-  async getThreadById(threadId) {
-    const query = {
-      text: 'SELECT threads.*, users.username FROM threads LEFT JOIN users ON threads.owner = users.id WHERE threads.id = $1',
-      values: [threadId],
+      text: 'INSERT INTO threads VALUES($1, $2, $3) RETURNING id, title',
+      values: [id, title, body],
     };
 
     const result = await this._pool.query(query);
@@ -32,15 +22,44 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return result.rows[0];
   }
 
+  async getThreadById(threadId) {
+    const query = {
+      text: 'SELECT * FROM threads WHERE threads.id = $1',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('Thread tidak ditemukan');
+    }
+
+    return result.rows[0];
+  }
+
   async getThreads() {
-    const query = 'SELECT threads.*, users.username FROM threads LEFT JOIN users ON threads.owner = users.id';
+    const query = 'SELECT * FROM threads';
     const result = await this._pool.query(query);
     return result.rows;
   }
 
   async deleteThread(threadId) {
+    await this.getThreadById(threadId);
     const query = 'DELETE FROM threads WHERE id = $1';
     await this._pool.query(query, [threadId]);
+  }
+
+  async updateThread(threadId, updatedThread) {
+    const { title, body } = updatedThread;
+    await this.getThreadById(threadId);
+    const query = {
+      text: 'UPDATE threads SET title = $1, body = $2 WHERE id = $3 RETURNING id, title, body',
+      values: [title, body, threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows[0];
   }
 
   async verifyThreadAccess(threadId, userId) {
