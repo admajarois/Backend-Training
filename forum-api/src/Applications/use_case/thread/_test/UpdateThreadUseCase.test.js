@@ -9,12 +9,14 @@ describe('UpdateThreadUseCase', () => {
       id: 'thread-123',
       title: 'Updated Thread Title',
       body: 'Updated Thread Body',
+      owner: 'user-123',
     };
 
     const mockUpdatedThread = new UpdateThread({
       id: 'thread-123',
       title: useCasePayload.title,
       body: useCasePayload.body,
+      owner: useCasePayload.owner,
     });
 
     const mockThreadRepository = new ThreadRepository();
@@ -35,11 +37,13 @@ describe('UpdateThreadUseCase', () => {
       id: useCasePayload.id,
       title: useCasePayload.title,
       body: useCasePayload.body,
+      owner: useCasePayload.owner,
     }));
     expect(mockThreadRepository.updateThread).toBeCalledWith(new UpdateThread({
       id: useCasePayload.id,
       title: useCasePayload.title,
       body: useCasePayload.body,
+      owner: useCasePayload.owner,
     }));
   });
 });

@@ -22,6 +22,7 @@ describe('a UpdateThread entities', () => {
       id: 'thread-123',
       title: 'Lorem ipsum dolor sit amet',
       body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      owner: 'user-123',
     };
 
     const updateThread = new UpdateThread(payload);
@@ -30,5 +31,6 @@ describe('a UpdateThread entities', () => {
     expect(updateThread.id).toEqual(payload.id);
     expect(updateThread.title).toEqual(payload.title);
     expect(updateThread.body).toEqual(payload.body);
+    expect(updateThread.owner).toEqual(payload.owner);
   });
 });

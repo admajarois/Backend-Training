@@ -5,6 +5,7 @@ describe('a AddThread entities', () => {
     const payload = {
       title: false,
       body: false,
+      owner: false,
     };
 
     expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
@@ -13,6 +14,7 @@ describe('a AddThread entities', () => {
     const payload = {
       title: 123,
       body: {},
+      owner: false,
     };
 
     expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
@@ -22,13 +24,14 @@ describe('a AddThread entities', () => {
     const payload = {
       title: 'Lorem ipsum dolor sit amet',
       body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
+      owner: 'user-123',
     };
 
     const addedThread = new AddThread(payload);
 
     expect(addedThread).toBeInstanceOf(AddThread);
-    expect(addedThread.id).toEqual(payload.id);
     expect(addedThread.title).toEqual(payload.title);
     expect(addedThread.body).toEqual(payload.body);
+    expect(addedThread.owner).toEqual(payload.owner);
   });
 });

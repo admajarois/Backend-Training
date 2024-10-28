@@ -19,6 +19,7 @@ describe('ThreadRepositoryPostgres', () => {
       const newThread = new AddThread({
         title: 'New Thread Title',
         body: 'This is the body of the new thread.',
+        owner: 'user-123',
       });
       const fakeIdGenerator = () => '456'; // stub!
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
@@ -32,6 +33,7 @@ describe('ThreadRepositoryPostgres', () => {
       expect(addedThread).toStrictEqual({
         id: 'thread-456',
         title: 'New Thread Title',
+        owner: 'user-123',
       });
     });
   });
@@ -39,7 +41,7 @@ describe('ThreadRepositoryPostgres', () => {
   describe('findThreadById function', () => {
     it('should return thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
@@ -64,7 +66,7 @@ describe('ThreadRepositoryPostgres', () => {
   describe('updateThreadById function', () => {
     it('should update thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
       const updatedThread = {
         title: 'Updated Title',
@@ -97,7 +99,7 @@ describe('ThreadRepositoryPostgres', () => {
   describe('deleteThreadById function', () => {
     it('should delete thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body' });
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
