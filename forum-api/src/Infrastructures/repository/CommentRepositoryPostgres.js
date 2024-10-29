@@ -9,12 +9,12 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async addComment(newComment) {
-    const { content, threadId, owner } = newComment;
+    const { content, thread, owner } = newComment;
     const id = `comment-${this._idGenerator()}`;
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, owner',
-      values: [id, content, threadId, owner],
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, thread, owner',
+      values: [id, content, thread, owner],
     };
 
     const result = await this._pool.query(query);
@@ -33,7 +33,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE thread_id = $1',
+      text: 'SELECT * FROM comments WHERE thread = $1',
       values: [threadId],
     };
 
