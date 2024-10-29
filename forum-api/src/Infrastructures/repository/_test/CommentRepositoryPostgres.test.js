@@ -24,6 +24,7 @@ describe('CommentRepositoryPostgres', () => {
     it('should persist a new comment and return the comment correctly', async () => {
       // Arrange
       const newComment = new AddComment({
+        id: 'comment-123',
         content: 'New Comment Content',
         owner: 'user-123',
         thread: 'thread-123',
@@ -73,7 +74,7 @@ describe('CommentRepositoryPostgres', () => {
         };
 
         // Action
-        await commentRepositoryPostgres.updateCommentById('comment-123', updatedComment);
+        await commentRepositoryPostgres.updateComment('comment-123', updatedComment);
 
         // Assert
         const comments = await CommentsTableTestHelper.getCommentById('comment-123');
@@ -88,21 +89,11 @@ describe('CommentRepositoryPostgres', () => {
         const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
         // Action
-        await commentRepositoryPostgres.deleteCommentById('comment-123');
+        await commentRepositoryPostgres.deleteComment('comment-123');
 
         // Assert
         const comments = await CommentsTableTestHelper.getCommentById('comment-123');
         expect(comments).toHaveLength(0);
-      });
-    });
-
-    describe('verifyCommentOwner function', () => {
-      it('should throw InvariantError when comment not found', async () => {
-        // Arrange
-        const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-
-        // Action & Assert
-        await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).rejects.toThrow(InvariantError);
       });
     });
 

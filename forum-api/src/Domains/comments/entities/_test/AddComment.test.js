@@ -15,8 +15,9 @@ describe('AddComment entities', () => {
   it('should throw error when payload did not meet data type specification', () => {
     // Arrange
     const payload = {
+      id: 123,
       content: 123,
-      threadId: 'thread-123',
+      thread: 'thread-123',
       owner: {},
     };
 
@@ -27,8 +28,9 @@ describe('AddComment entities', () => {
   it('should create AddComment object correctly', () => {
     // Arrange
     const payload = {
+      id: 'comment-123',
       content: 'a comment',
-      threadId: 'thread-123',
+      thread: 'thread-123',
       owner: 'user-123',
     };
 
@@ -37,7 +39,7 @@ describe('AddComment entities', () => {
 
     // Assert
     expect(addComment.content).toEqual(payload.content);
-    expect(addComment.threadId).toEqual(payload.threadId);
+    expect(addComment.thread).toEqual(payload.thread);
     expect(addComment.owner).toEqual(payload.owner);
   });
 });

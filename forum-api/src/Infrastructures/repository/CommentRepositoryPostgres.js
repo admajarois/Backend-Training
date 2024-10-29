@@ -76,6 +76,11 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     return result.rows[0];
   }
+
+  async getComments() {
+    const result = await this._pool.query('SELECT * FROM comments');
+    return result.rows;
+  }
 }
 
 module.exports = CommentRepositoryPostgres;
