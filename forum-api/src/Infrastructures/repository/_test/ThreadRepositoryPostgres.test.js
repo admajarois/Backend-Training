@@ -1,12 +1,17 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
 
 describe('ThreadRepositoryPostgres', () => {
+  beforeEach(async () => {
+    await UsersTableTestHelper.addUser({ id: 'user-123', username: 'testuser', password: 'password', fullname: 'Test User' });
+  });
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
+    await UsersTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
@@ -33,6 +38,7 @@ describe('ThreadRepositoryPostgres', () => {
       expect(addedThread).toStrictEqual({
         id: 'thread-456',
         title: 'New Thread Title',
+        body: 'This is the body of the new thread.',
         owner: 'user-123',
       });
     });

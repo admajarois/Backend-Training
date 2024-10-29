@@ -14,7 +14,7 @@ describe('a AddThread entities', () => {
     const payload = {
       title: 123,
       body: {},
-      owner: false,
+      owner: [],
     };
 
     expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
