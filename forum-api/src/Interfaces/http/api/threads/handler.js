@@ -1,8 +1,7 @@
-const AddThreadUseCase = require('../../../../Applications/use_case/AddThreadUseCase');
-const GetThreadByIdUseCase = require('../../../../Applications/use_case/GetThreadByIdUseCase');
-const PutThreadByIdUseCase = require('../../../../Applications/use_case/PutThreadByIdUseCase');
-const DeleteThreadByIdUseCase = require('../../../../Applications/use_case/DeleteThreadByIdUseCase');
-const GetThreadsUseCase = require('../../../../Applications/use_case/GetThreadsUseCase');
+const AddThreadUseCase = require('../../../../Applications/use_case/thread/AddThreadUseCase');
+const UpdateThreadUseCase = require('../../../../Applications/use_case/thread/UpdateThreadUseCase');
+const DeleteThreadUseCase = require('../../../../Applications/use_case/thread/DeleteThreadUseCase');
+const DetailThreadUseCase = require('../../../../Applications/use_case/thread/DetailThreadUseCase');
 
 class ThreadsHandler {
     constructor(container) {
