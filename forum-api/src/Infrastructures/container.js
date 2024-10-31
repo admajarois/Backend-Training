@@ -254,10 +254,6 @@ container.register([
       ],
     },
   },
-]);
-
-// registering comment use case
-container.register([
   {
     key: AddCommentUseCase.name,
     Class: AddCommentUseCase,

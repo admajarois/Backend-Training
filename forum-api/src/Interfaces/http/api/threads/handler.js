@@ -6,14 +6,20 @@ const DetailThreadUseCase = require('../../../../Applications/use_case/thread/De
 class ThreadsHandler {
     constructor(container) {
         this._container = container;
-
+        console.log("container", container);
+        
         this.postThreadHandler = this.postThreadHandler.bind(this);
+        this.getThreadByIdHandler = this.getThreadByIdHandler.bind(this);
+        this.putThreadByIdHandler = this.putThreadByIdHandler.bind(this);
+        this.deleteThreadByIdHandler = this.deleteThreadByIdHandler.bind(this);
+        this.getThreadsHandler = this.getThreadsHandler.bind(this);
     }
 
     async postThreadHandler(request, h) {
         const addThreadUseCase = this._container.getInstance(AddThreadUseCase.name);
         const addedThread = await addThreadUseCase.execute(request.payload);
-
+        console.log("addedThread", addedThread);
+        
         const response = h.response({
             status: 'success',
             data: {
@@ -25,8 +31,8 @@ class ThreadsHandler {
     }
 
     async getThreadByIdHandler(request, h) {
-        const getThreadByIdUseCase = this._container.getInstance(GetThreadByIdUseCase.name);
-        const thread = await getThreadByIdUseCase.execute(request.params.id);
+        const detailThreadUseCase = this._container.getInstance(DetailThreadUseCase.name);
+        const thread = await detailThreadUseCase.execute(request.params.id);
 
         const response = h.response({
             status: 'success',
@@ -38,8 +44,8 @@ class ThreadsHandler {
     }
 
     async putThreadByIdHandler(request, h) {
-        const putThreadByIdUseCase = this._container.getInstance(PutThreadByIdUseCase.name);
-        const thread = await putThreadByIdUseCase.execute(request.params.id, request.payload);
+        const updateThreadUseCase = this._container.getInstance(UpdateThreadUseCase.name);
+        const thread = await updateThreadUseCase.execute(request.params.id, request.payload);
 
         const response = h.response({
             status: 'success',
@@ -51,8 +57,8 @@ class ThreadsHandler {
     }
     
     async deleteThreadByIdHandler(request, h) {
-        const deleteThreadByIdUseCase = this._container.getInstance(DeleteThreadByIdUseCase.name);
-        await deleteThreadByIdUseCase.execute(request.params.id);
+        const deleteThreadUseCase = this._container.getInstance(DeleteThreadUseCase.name);
+        await deleteThreadUseCase.execute(request.params.id);
 
         const response = h.response({
             status: 'success',
@@ -61,9 +67,9 @@ class ThreadsHandler {
     }
 
     async getThreadsHandler(request, h) {
-        const getThreadsUseCase = this._container.getInstance(GetThreadsUseCase.name);
-        const threads = await getThreadsUseCase.execute(request.query);
-
+        const detailThreadUseCase = this._container.getInstance(DetailThreadUseCase.name);
+        const threads = await detailThreadUseCase.execute(request.query);
+        console.log("threads", threads);
         const response = h.response({
             status: 'success',
             data: {

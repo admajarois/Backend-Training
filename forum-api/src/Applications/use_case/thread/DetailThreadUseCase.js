@@ -6,8 +6,13 @@ class DetailThreadUseCase {
   }
 
   async execute(threadId) {
-    const thread = await this._threadRepository.getThreadById(threadId);
-    return new DetailThread(thread);
+    if (threadId) {
+      const thread = await this._threadRepository.getThreadById(threadId);
+      return new DetailThread(thread);
+    } else {
+      const threads = await this._threadRepository.getAllThreads();
+      return threads;
+    }
   }
 }
 
