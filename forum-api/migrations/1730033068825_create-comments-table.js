@@ -12,7 +12,7 @@ exports.up = pgm => {
       type: 'text',
       notNull: true
     },
-    thread: {
+    threadId: {
       type: 'varchar(255)',
       notNull: true
     },
@@ -22,9 +22,9 @@ exports.up = pgm => {
     }
   });
 
-  pgm.addConstraint('comments', 'fk_comments.thread_threads.id', {
+  pgm.addConstraint('comments', 'fk_comments.threadId_threads.id', {
     foreignKeys: {
-      columns: 'thread',
+      columns: 'threadId',
       references: 'threads(id)',
       onDelete: 'CASCADE'
     }
@@ -40,7 +40,7 @@ exports.up = pgm => {
 };
 
 exports.down = pgm => {
-  pgm.dropConstraint('comments', 'fk_comments.thread_threads.id');
+  pgm.dropConstraint('comments', 'fk_comments.threadId_threads.id');
   pgm.dropConstraint('comments', 'fk_comments.owner_users.id');
   pgm.dropTable('comments');
 };

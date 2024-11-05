@@ -1,5 +1,8 @@
 const ThreadRepository = require('../../Domains/threads/ThreadRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
+const AddedThread = require('../../Domains/threads/entities/AddedThread');
+
 
 class ThreadRepositoryPostgres extends ThreadRepository {
   constructor(pool, idGenerator) {
@@ -8,8 +11,25 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     this._idGenerator = idGenerator;
   }
 
+  async verifyThreadAccess(threadId, userId) {
+    const thread = await this.getThreadById(threadId);
+    if (thread.owner !== userId) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
+    }
+  }
+
+
+  async verifyValidThread(newThread) {
+    const { title, body } = newThread;
+    if (!title || !body) {
+      throw new InvariantError('Gagal menambahkan thread. Mohon isi semua field');
+    }
+  }
+
   async addThread(newThread) {
+    console.log('masuk sini add thread', newThread);
     const { title, body, owner } = newThread;
+    console.log('masuk sini add thread', title, body, owner);
     const id = `thread-${this._idGenerator()}`;
 
     const query = {
@@ -18,7 +38,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const result = await this._pool.query(query);
-    return result.rows[0];
+    console.log('masuk sini add thread result', result);
+    return new AddedThread({ ...result.rows[0] });
   }
 
   async getThreadById(threadId) {

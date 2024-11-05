@@ -1,3 +1,5 @@
+const AddCommentUseCase = require('../../../../Applications/use_case/comments/AddCommentUseCase');
+
 class CommentsHandler {
   constructor(container) {
     this._container = container;
@@ -8,10 +10,10 @@ class CommentsHandler {
   }
 
   async postCommentHandler(request, h) {
-    this._validator.validatePostCommentPayload(request.payload);
     const { threadId } = request.params;
     const { id: owner } = request.auth.credentials;
-    const addedComment = await this._container.addComment(threadId, owner, request.payload);
+    const addCommentUseCase = this._container.getInstance(AddCommentUseCase.name);
+    const addedComment = await addCommentUseCase.execute({ ...request.payload, threadId, owner });
 
     const response = h.response({
       status: 'success',

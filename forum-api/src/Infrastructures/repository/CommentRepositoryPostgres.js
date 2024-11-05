@@ -1,5 +1,6 @@
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
+const AddedComment = require('../../Domains/comments/entities/AddedComment');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -9,16 +10,16 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async addComment(newComment) {
-    const { content, thread, owner } = newComment;
+    const { content, threadId, owner } = newComment;
     const id = `comment-${this._idGenerator()}`;
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, thread, owner',
-      values: [id, content, thread, owner],
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4) RETURNING id, content, threadId, owner',
+      values: [id, content, threadId, owner],
     };
 
     const result = await this._pool.query(query);
-    return result.rows[0];
+    return new AddedComment({ ...result.rows[0] });
   }
 
   async deleteComment(commentId) {
@@ -33,7 +34,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE thread = $1',
+      text: 'SELECT * FROM comments WHERE threadId = $1',
       values: [threadId],
     };
 

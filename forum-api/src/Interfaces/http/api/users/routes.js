@@ -7,14 +7,7 @@ const routes = (handler) => ([
   {
     method: 'GET',
     path: '/users',
-    handler: () => {
-      return {
-        status: 'success',
-        data: {
-          users: "users",
-        },
-      };
-    },
+    handler: handler.getUsersHandler,
   },
 ]);
 

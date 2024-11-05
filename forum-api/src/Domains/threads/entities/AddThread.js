@@ -9,7 +9,9 @@ class AddThread {
   }
 
   _verifyPayload({ title, body, owner }) { 
+    console.log('masuk sini verify payload', title, body, owner);
     if (!title || !body || !owner) {
+      console.log('masuk sini verify payload', title, body, owner);
       throw new Error('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 

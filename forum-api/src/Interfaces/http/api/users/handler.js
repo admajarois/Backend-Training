@@ -20,6 +20,11 @@ class UsersHandler {
     response.code(201);
     return response;
   }
+
+  async getUsersHandler(request, h) {
+    const getUsersUseCase = this._container.getInstance(GetUsersUseCase.name);
+    const users = await getUsersUseCase.execute(request.query);
+  }
 }
 
 module.exports = UsersHandler;
