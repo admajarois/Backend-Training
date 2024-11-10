@@ -1,26 +1,24 @@
 class DetailThread {
   constructor(payload) {
-    const { thread, user } = payload;
+    const { thread } = payload;
+    thread.date = new Date(thread.date).toISOString();
     this._verifyPayload(thread);
 
-    console.log('masuk sini detail thread', payload);
-    const { id, title, body } = thread;
-    const { username } = user;
+    const { id, title, body, date, username } = thread;
 
     this.id = id;
     this.title = title;
     this.body = body;
+    this.date = date;
     this.username = username;
   }
 
-  _verifyPayload({ id, title, body, owner }) {
-    if (!id || !title || !body || !owner) {
-      console.log('masuk sini detail thread verify payload', payload);
+  _verifyPayload({ id, title, body, date, username }) {
+    if (!id || !title || !body || !date || !username) {
       throw new Error('THREAD_DETAIL.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof owner !== 'string') {
-      console.log('masuk sini detail thread verify payload 2', payload);
+    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof date !== 'string' || typeof username !== 'string') {
       throw new Error('THREAD_DETAIL.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

@@ -1,4 +1,5 @@
 const AddCommentUseCase = require('../../../../Applications/use_case/comments/AddCommentUseCase');
+const DeleteCommentUseCase = require('../../../../Applications/use_case/comments/DeleteCommentUseCase');
 const autoBind = require('auto-bind');
 
 
@@ -28,9 +29,8 @@ class CommentsHandler {
   async deleteCommentHandler(request, h) {
     const { threadId, commentId } = request.params;
     const { id: owner } = request.auth.credentials;
-
-    await this._container.verifyCommentOwner(commentId, owner);
-    await this._container.deleteComment(threadId, commentId);
+    const deleteCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name);
+    await deleteCommentUseCase.execute({ threadId, commentId, owner });
 
     return {
       status: 'success',

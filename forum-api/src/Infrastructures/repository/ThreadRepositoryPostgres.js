@@ -2,6 +2,7 @@ const ThreadRepository = require('../../Domains/threads/ThreadRepository');
 const InvariantError = require('../../Commons/exceptions/InvariantError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const AddedThread = require('../../Domains/threads/entities/AddedThread');
+const DetailThread = require('../../Domains/threads/entities/DetailThread');
 
 
 class ThreadRepositoryPostgres extends ThreadRepository {
@@ -37,27 +38,22 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     };
 
     const result = await this._pool.query(query);
-    console.log('masuk sini add thread result', result);
     return new AddedThread({ ...result.rows[0] });
   }
 
-  async getThreads(threadId = null) {
-    let query;
-    if (threadId) {
-      query = {
-        text: 'SELECT * FROM threads WHERE threads.id = $1',
-        values: [threadId],
-      };
-    } else {
-      query = 'SELECT * FROM threads';
-    }
-
+  async getThreadById(threadId) {
+    const query = {
+      text: 'SELECT threads.*, users.username FROM threads JOIN users ON threads.owner = users.id WHERE threads.id = $1',
+      values: [threadId],
+    };
     const result = await this._pool.query(query);
-    if (threadId) {
-      return result.rows[0];
-    } else {
-      return result.rows;
-    }
+    return new DetailThread({ thread: result.rows[0] });
+  }
+
+  async getThreads() {
+    const query = 'SELECT threads.*, users.username FROM threads JOIN users ON threads.owner = users.id';
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 
   async deleteThread(threadId) {

@@ -1,6 +1,9 @@
 const CommentRepository = require('../../Domains/comments/CommentRepository');
-const InvariantError = require('../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../Domains/comments/entities/DetailComment');
+const DeletedComment = require('../../Domains/comments/entities/DeletedComment.js');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -22,33 +25,40 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async deleteComment(commentId) {
+    const content = '**komentar telah dihapus**';
+    const active = false;
     const query = {
-      text: 'DELETE FROM comments WHERE id = $1 RETURNING id',
-      values: [commentId],
+      text: 'UPDATE comments SET content = $1, active = $2 WHERE id = $3 RETURNING id, content, active',
+      values: [content, active, commentId],
     };
 
     const result = await this._pool.query(query);
-    return result.rows[0];
+    return new DeletedComment({ ...result.rows[0] });
   }
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE threadId = $1',
+      text: 'SELECT comments.*, users.username FROM comments JOIN users ON comments.owner = users.id WHERE "threadId" = $1',
       values: [threadId],
     };
 
     const result = await this._pool.query(query);
-    return result.rows;
+    const comments = result.rows.map((comment) => new DetailComment({ ...comment }));
+    return comments;
   }
 
-  async verifyCommentAccess(commentId, userId) {
+  async verifyCommentOwner(commentId, userId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE id = $1 AND owner = $2',
-      values: [commentId, userId],
+      text: 'SELECT owner FROM comments WHERE id = $1 AND active = true',
+      values: [commentId],
     };
-
     const result = await this._pool.query(query);
-    return result.rowCount;
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Komentar tidak ditemukan');
+    }
+    if (result.rows[0].owner !== userId) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
+    }
   }
 
   async updateComment(commentId, updateComment) {
@@ -65,22 +75,17 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentById(commentId) {
     const query = {
-      text: 'SELECT * FROM comments WHERE id = $1',
+      text: 'SELECT comments.*, users.username FROM comments JOIN users ON comments.owner = users.id WHERE comments.id = $1',
       values: [commentId],
     };
 
     const result = await this._pool.query(query);
-    if (!result.rowCount) {
-      throw new InvariantError('Comment tidak ditemukan');
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Comment tidak ditemukan');
     }
-
-    return result.rows[0];
+    return new DetailComment({ ...result.rows[0] });
   }
 
-  async getComments() {
-    const result = await this._pool.query('SELECT * FROM comments');
-    return result.rows;
-  }
 }
 
 module.exports = CommentRepositoryPostgres;

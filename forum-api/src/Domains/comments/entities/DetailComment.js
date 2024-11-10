@@ -1,8 +1,8 @@
 class DetailComment {
   constructor(payload) {
+    payload.date = new Date(payload.date).toISOString();
     this._verifyPayload(payload);
     const { id, content, username, date } = payload;
-
     this.id = id;
     this.username = username;
     this.date = date;

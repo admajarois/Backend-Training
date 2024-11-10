@@ -1,5 +1,3 @@
-const DetailThread = require('../../../Domains/threads/entities/DetailThread');
-
 class DetailThreadUseCase {
   constructor({ threadRepository, userRepository, commentRepository }) {
     this._threadRepository = threadRepository;
@@ -9,14 +7,12 @@ class DetailThreadUseCase {
 
   async execute(threadId) {
     if (threadId) {
-      const thread = await this._threadRepository.getThreads(threadId);
-      const user = await this._userRepository.getUserById(thread.owner);
+      const thread = await this._threadRepository.getThreadById(threadId);
       const comments = await this._commentRepository.getCommentsByThreadId(threadId);
-      const detailComments = comments.map((comment) => new DetailComment(comment));
-      return new DetailThread({ thread, user, comments });
+      thread.comments = comments;
+      return thread;
     } else {
       const threads = await this._threadRepository.getThreads();
-      console.log('masuk sini detail thread use case 2', threads);
       return threads;
     }
   }
