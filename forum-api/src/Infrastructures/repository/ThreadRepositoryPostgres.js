@@ -1,5 +1,5 @@
 const ThreadRepository = require('../../Domains/threads/ThreadRepository');
-const InvariantError = require('../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const AddedThread = require('../../Domains/threads/entities/AddedThread');
 const DetailThread = require('../../Domains/threads/entities/DetailThread');
@@ -19,11 +19,14 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     }
   }
 
-
-  async verifyValidThread(newThread) {
-    const { title, body } = newThread;
-    if (!title || !body) {
-      throw new InvariantError('Gagal menambahkan thread. Mohon isi semua field');
+  async verifyThreadAvailability(threadId) {
+    const query = {
+      text: 'SELECT * FROM threads WHERE id = $1',
+      values: [threadId],
+    };
+    const result = await this._pool.query(query);
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Thread tidak ditemukan');
     }
   }
 
@@ -75,11 +78,6 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return result.rows[0];
   }
 
-  async verifyThreadAccess(threadId, userId) {
-    const query = 'SELECT threads.* FROM threads WHERE id = $1 AND owner = $2';
-    const result = await this._pool.query(query, [threadId, userId]);
-    return result.rowCount > 0;
-  }
 }
 
 module.exports = ThreadRepositoryPostgres;

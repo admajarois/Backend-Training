@@ -5,6 +5,7 @@ const AddedComment = require('../../Domains/comments/entities/AddedComment');
 const DetailComment = require('../../Domains/comments/entities/DetailComment');
 const DeletedComment = require('../../Domains/comments/entities/DeletedComment.js');
 
+
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
     super();
@@ -84,6 +85,19 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new NotFoundError('Comment tidak ditemukan');
     }
     return new DetailComment({ ...result.rows[0] });
+  }
+
+  async verifyCommentAvailability(commentId) {
+    console.log('masuk sini verify comment availability', commentId);
+    const query = {
+      text: 'SELECT * FROM comments WHERE id = $1',
+      values: [commentId],
+    };
+    const result = await this._pool.query(query);
+    console.log('result verify comment availability', result.rows);
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Comment tidak ditemukan');
+    }
   }
 
 }

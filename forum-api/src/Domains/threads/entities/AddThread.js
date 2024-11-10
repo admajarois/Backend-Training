@@ -1,3 +1,5 @@
+const InvariantError = require('../../../Commons/exceptions/InvariantError');
+
 class AddThread {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -10,11 +12,11 @@ class AddThread {
 
   _verifyPayload({ title, body, owner }) {
     if (!title || !body || !owner) {
-      throw new Error('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+      throw new InvariantError('Thread tidak memiliki properti yang diperlukan');
     }
 
     if (typeof title !== 'string' || typeof body !== 'string' || typeof owner !== 'string') {
-      throw new Error('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+      throw new InvariantError('Thread tidak memenuhi spesifikasi tipe data');
     }
   }
 }

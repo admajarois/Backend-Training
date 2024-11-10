@@ -1,5 +1,8 @@
 const AddedReply = require('../../Domains/replies/entites/AddedReply');
 const DeletedReply = require('../../Domains/replies/entites/DeletedReply');
+const GetReply = require('../../Domains/replies/entites/GetReply');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
 class RepliesRepositoryPostgres {
   constructor(pool, idGenerator) {
@@ -15,41 +18,48 @@ class RepliesRepositoryPostgres {
     };
 
     const result = await this._pool.query(query);
-    return result.rows[0].owner === owner;
+    console.log('result verify reply owner', result.rows);
+    if (result.rowCount === 0) {
+      throw new NotFoundError('reply tidak ditemukan');
+    }
+    if (result.rows[0].owner !== owner) {
+      console.log('result verify reply owner', result.rows[0].owner, owner);    
+      throw new AuthorizationError('reply tidak dapat diakses');
+    }
   }
 
   async postReply(addReply) {
-    const { content, owner, threadId, commentId } = addReply;
+    const { content, owner, commentId } = addReply;
     const id = `reply-${this._idGenerator()}`;
     const date = new Date().toISOString();
     const query = {
-      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
-      values: [id, content, owner, threadId, commentId, date],
+      text: 'INSERT INTO replies(id, "commentId", content, owner, date, active) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, owner',
+      values: [id, commentId, content, owner, date, true],
     };
-
     const result = await this._pool.query(query);
     return new AddedReply({ ...result.rows[0] });
   }
 
   async deleteReply(deleteReply) {
     const { id } = deleteReply;
+    const active = false;
+    const content = '**balasan telah dihapus**';
     const query = {
-      text: 'UPDATE replies SET active = false WHERE id = $1 RETURNING id, content, owner, active',
-      values: [id],
+      text: 'UPDATE replies SET active = $1, content = $2 WHERE id = $3 RETURNING id, content, owner, active',
+      values: [active, content, id],
     };
-
     const result = await this._pool.query(query);
     return new DeletedReply({ ...result.rows[0] });
   }
   
-  async getRepliesByCommentId(commentId) {
+  async getRepliesByCommentIds(commentIds) {
     const query = {
-      text: 'SELECT id, content, date, username FROM replies WHERE comment_id = $1',
-      values: [commentId],
+      text: 'SELECT replies.*, users.username FROM replies JOIN users ON users.id = replies.owner WHERE replies."commentId" = ANY($1)',
+      values: [commentIds],
     };
-
     const result = await this._pool.query(query);
-    return result.rows.map(row => new GetReply({ ...row }));
+    console.log('result get replies by comment ids', result.rows);
+    return result.rows.map(reply => new GetReply({ ...reply }));
   }
 }
 
