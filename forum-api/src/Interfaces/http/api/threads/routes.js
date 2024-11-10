@@ -11,9 +11,6 @@ const routes = (handler) => [
         method: 'GET',
         path: '/threads/{id}',
         handler: handler.detailThreadHandler,
-        options: {
-            auth: 'forum_api_jwt',
-        },
     },
     {
         method: 'PUT',
@@ -35,9 +32,6 @@ const routes = (handler) => [
         method: 'GET',
         path: '/threads',
         handler: handler.getThreadsHandler,
-        options: {
-            auth: 'forum_api_jwt',
-        },
     },
 ];
 

@@ -27,14 +27,13 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async addThread(newThread) {
-    console.log('masuk sini add thread', newThread);
     const { title, body, owner } = newThread;
-    console.log('masuk sini add thread', title, body, owner);
     const id = `thread-${this._idGenerator()}`;
+    const date = new Date().toISOString();  
 
     const query = {
-      text: 'INSERT INTO threads VALUES($1, $2, $3, $4) RETURNING id, title, body, owner',
-      values: [id, title, body, owner],
+      text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5) RETURNING id, title, body, owner',
+      values: [id, title, body, owner, date],
     };
 
     const result = await this._pool.query(query);
@@ -42,25 +41,23 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return new AddedThread({ ...result.rows[0] });
   }
 
-  async getThreadById(threadId) {
-    const query = {
-      text: 'SELECT * FROM threads WHERE threads.id = $1',
-      values: [threadId],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new InvariantError('Thread tidak ditemukan');
+  async getThreads(threadId = null) {
+    let query;
+    if (threadId) {
+      query = {
+        text: 'SELECT * FROM threads WHERE threads.id = $1',
+        values: [threadId],
+      };
+    } else {
+      query = 'SELECT * FROM threads';
     }
 
-    return result.rows[0];
-  }
-
-  async getThreads() {
-    const query = 'SELECT * FROM threads';
     const result = await this._pool.query(query);
-    return result.rows;
+    if (threadId) {
+      return result.rows[0];
+    } else {
+      return result.rows;
+    }
   }
 
   async deleteThread(threadId) {

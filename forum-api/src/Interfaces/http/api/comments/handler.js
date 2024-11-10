@@ -1,12 +1,12 @@
 const AddCommentUseCase = require('../../../../Applications/use_case/comments/AddCommentUseCase');
+const autoBind = require('auto-bind');
+
 
 class CommentsHandler {
   constructor(container) {
     this._container = container;
 
-    this.postCommentHandler = this.postCommentHandler.bind(this);
-    this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
-    this.putCommentHandler = this.putCommentHandler.bind(this);
+    autoBind(this);
   }
 
   async postCommentHandler(request, h) {

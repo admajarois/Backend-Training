@@ -1,14 +1,13 @@
 const LoginUserUseCase = require('../../../../Applications/use_case/user/LoginUserUseCase');
 const RefreshAuthenticationUseCase = require('../../../../Applications/use_case/user/RefreshAuthenticationUseCase');
 const LogoutUserUseCase = require('../../../../Applications/use_case/user/LogoutUserUseCase');
+const autoBind = require('auto-bind');
 
 class AuthenticationsHandler {
   constructor(container) {
     this._container = container;
 
-    this.postAuthenticationHandler = this.postAuthenticationHandler.bind(this);
-    this.putAuthenticationHandler = this.putAuthenticationHandler.bind(this);
-    this.deleteAuthenticationHandler = this.deleteAuthenticationHandler.bind(this);
+    autoBind(this);
   }
 
   async postAuthenticationHandler(request, h) {

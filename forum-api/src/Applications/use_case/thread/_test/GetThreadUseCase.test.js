@@ -1,7 +1,7 @@
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
-const GetThreadUseCase = require('../GetThreadUseCase');
+const DetailThreadUseCase = require('../DetailThreadUseCase');
 
-describe('GetThreadUseCase', () => {
+describe('DetailThreadUseCase', () => {
   it('should orchestrating the get threads action correctly', async () => {
     // Arrange
     const mockThreads = [
@@ -24,12 +24,12 @@ describe('GetThreadUseCase', () => {
     mockThreadRepository.getThreads = jest.fn().mockImplementation(() => Promise.resolve(mockThreads));
 
     // Creating use case instance
-    const getThreadUseCase = new GetThreadUseCase({
+    const detailThreadUseCase = new DetailThreadUseCase({
       threadRepository: mockThreadRepository,
     });
 
     // Action
-    const threads = await getThreadUseCase.execute();
+    const threads = await detailThreadUseCase.execute();
 
     // Assert
     expect(threads).toStrictEqual(mockThreads);
