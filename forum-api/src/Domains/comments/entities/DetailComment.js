@@ -1,11 +1,10 @@
 class DetailComment {
   constructor(payload) {
-    payload.date = new Date(payload.date).toISOString();
     this._verifyPayload(payload);
     const { id, content, username, date, replies } = payload;
     this.id = id;
     this.username = username;
-    this.date = date;
+    this.date = new Date(date).toISOString;
     this.content = content;
     this.replies = replies;
   }
@@ -15,7 +14,7 @@ class DetailComment {
       throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string') {
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string') {
       throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

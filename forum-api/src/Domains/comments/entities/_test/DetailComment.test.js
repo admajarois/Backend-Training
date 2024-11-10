@@ -6,7 +6,7 @@ describe('DetailComment entities', () => {
     const payload = {};
 
     // Action and Assert
-    expect(() => new DetailComment(payload)).toThrowError('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
+    expect(() => new DetailComment(payload)).toThrowError('tidak dapat mendapatkan detail komentar');
   });
 
   it('should throw error when payload did not meet data type specification', () => {
@@ -16,7 +16,7 @@ describe('DetailComment entities', () => {
     };
 
     // Action and Assert
-    expect(() => new DetailComment(payload)).toThrowError('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
+    expect(() => new DetailComment(payload)).toThrowError('tidak dapat mendapatkan detail komentar');
   });
 
   it('should create DetailComment object correctly', () => {

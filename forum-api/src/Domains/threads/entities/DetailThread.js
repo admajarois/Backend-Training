@@ -1,7 +1,6 @@
 class DetailThread {
   constructor(payload) {
     const { thread } = payload;
-    thread.date = new Date(thread.date).toISOString();
     this._verifyPayload(thread);
 
     const { id, title, body, date, username } = thread;
@@ -9,7 +8,7 @@ class DetailThread {
     this.id = id;
     this.title = title;
     this.body = body;
-    this.date = date;
+    this.date = new Date(date).toISOString();
     this.username = username;
   }
 
@@ -18,7 +17,7 @@ class DetailThread {
       throw new Error('THREAD_DETAIL.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof date !== 'string' || typeof username !== 'string') {
+    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof username !== 'string') {
       throw new Error('THREAD_DETAIL.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
