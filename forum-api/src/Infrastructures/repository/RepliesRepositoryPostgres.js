@@ -18,12 +18,10 @@ class RepliesRepositoryPostgres {
     };
 
     const result = await this._pool.query(query);
-    console.log('result verify reply owner', result.rows);
     if (result.rowCount === 0) {
       throw new NotFoundError('reply tidak ditemukan');
     }
     if (result.rows[0].owner !== owner) {
-      console.log('result verify reply owner', result.rows[0].owner, owner);    
       throw new AuthorizationError('reply tidak dapat diakses');
     }
   }
@@ -54,11 +52,10 @@ class RepliesRepositoryPostgres {
   
   async getRepliesByCommentIds(commentIds) {
     const query = {
-      text: 'SELECT replies.*, users.username FROM replies JOIN users ON users.id = replies.owner WHERE replies."commentId" = ANY($1)',
+      text: 'SELECT replies.*, users.username FROM replies JOIN users ON users.id = replies.owner WHERE replies."commentId" = ANY($1) ORDER BY replies.date ASC',
       values: [commentIds],
     };
     const result = await this._pool.query(query);
-    console.log('result get replies by comment ids', result.rows);
     return result.rows.map(reply => new GetReply({ ...reply }));
   }
 }

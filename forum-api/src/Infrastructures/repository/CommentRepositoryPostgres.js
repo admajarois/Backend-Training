@@ -88,13 +88,11 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async verifyCommentAvailability(commentId) {
-    console.log('masuk sini verify comment availability', commentId);
     const query = {
       text: 'SELECT * FROM comments WHERE id = $1',
       values: [commentId],
     };
     const result = await this._pool.query(query);
-    console.log('result verify comment availability', result.rows);
     if (result.rowCount === 0) {
       throw new NotFoundError('Comment tidak ditemukan');
     }

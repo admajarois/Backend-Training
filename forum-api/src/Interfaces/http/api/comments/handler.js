@@ -34,6 +34,7 @@ class CommentsHandler {
 
     return {
       status: 'success',
+      message: 'komentar berhasil dihapus',
     };
   }
 
