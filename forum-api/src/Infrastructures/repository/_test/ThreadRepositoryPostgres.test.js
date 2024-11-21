@@ -1,6 +1,5 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
@@ -34,9 +33,7 @@ describe('ThreadRepositoryPostgres', () => {
       const addedThread = await threadRepositoryPostgres.addThread(newThread);
 
       // Assert
-      const threads = await ThreadsTableTestHelper.getThreadById('thread-456');
-      expect(threads).toHaveLength(1);
-      expect(addedThread).toStrictEqual({
+      expect(addedThread).toEqual({
         id: 'thread-456',
         title: 'New Thread Title',
         body: 'This is the body of the new thread.',

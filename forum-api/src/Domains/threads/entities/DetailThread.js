@@ -1,6 +1,7 @@
 class DetailThread {
   constructor(payload) {
     const { thread } = payload;
+
     this._verifyPayload(thread);
 
     const { id, title, body, date, username } = thread;

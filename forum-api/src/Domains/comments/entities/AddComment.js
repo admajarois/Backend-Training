@@ -1,5 +1,3 @@
-const InvariantError = require('../../../Commons/exceptions/InvariantError');
-
 class AddComment {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -12,11 +10,11 @@ class AddComment {
 
   _verifyPayload({ content, threadId, owner }) {
     if (!content || !threadId || !owner) {
-      throw new InvariantError('tidak dapat membuat komentar');
+      throw new Error('ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
     if (typeof content !== 'string' || typeof threadId !== 'string' || typeof owner !== 'string') {
-      throw new InvariantError('tidak dapat membuat komentar');
+      throw new Error('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }

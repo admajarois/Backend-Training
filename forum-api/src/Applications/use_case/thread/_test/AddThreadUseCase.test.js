@@ -8,12 +8,14 @@ describe('AddThreadUseCase', () => {
     const useCasePayload = {
       title: 'Thread Title',
       body: 'Thread Body',
+      owner: 'user-123',
     };
 
     const mockAddedThread = new AddThread({
       id: 'thread-123',
       title: useCasePayload.title,
       body: useCasePayload.body,
+      owner: useCasePayload.owner,
     });
 
     const mockThreadRepository = new ThreadRepository();

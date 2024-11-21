@@ -13,8 +13,8 @@ describe('a UpdateThread entities', () => {
       body: '',
     };
 
-    expect(() => new UpdateThread(payloadWithEmptyTitle)).toThrowError('tidak dapat memperbarui thread');
-    expect(() => new UpdateThread(payloadWithEmptyBody)).toThrowError('tidak dapat memperbarui thread');
+    expect(() => new UpdateThread(payloadWithEmptyTitle)).toThrowError('UPDATE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+    expect(() => new UpdateThread(payloadWithEmptyBody)).toThrowError('UPDATE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should create updateThread object correctly when id, title, and body are valid', () => {

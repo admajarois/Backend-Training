@@ -9,7 +9,7 @@ describe('AddComment entities', () => {
     };
 
     // Action and Assert
-    expect(() => new AddComment(payload)).toThrowError('tidak dapat membuat komentar');
+    expect(() => new AddComment(payload)).toThrowError('ADD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
   it('should throw error when payload did not meet data type specification', () => {
@@ -17,13 +17,13 @@ describe('AddComment entities', () => {
     const payload = {
       id: 123,
       content: 123,
-      thread: 'thread-123',
+      threadId: 'thread-123',
       owner: {},
-      date: false,
+      date: new Date().toString(),
     };
 
     // Action and Assert
-    expect(() => new AddComment(payload)).toThrowError('tidak dapat membuat komentar');
+    expect(() => new AddComment(payload)).toThrowError('ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
   it('should create AddComment object correctly', () => {
@@ -31,9 +31,8 @@ describe('AddComment entities', () => {
     const payload = {
       id: 'comment-123',
       content: 'a comment',
-      thread: 'thread-123',
+      threadId: 'thread-123',
       owner: 'user-123',
-      date: new Date(),
     };
 
     // Action
@@ -41,8 +40,7 @@ describe('AddComment entities', () => {
 
     // Assert
     expect(addComment.content).toEqual(payload.content);
-    expect(addComment.thread).toEqual(payload.thread);
+    expect(addComment.threadId).toEqual(payload.threadId);
     expect(addComment.owner).toEqual(payload.owner);
-    expect(addComment.date).toEqual(payload.date);
   });
 });

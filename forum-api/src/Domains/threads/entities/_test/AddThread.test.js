@@ -9,7 +9,7 @@ describe('a AddThread entities', () => {
       date: false,
     };
 
-    expect(() => new AddThread(payload)).toThrowError('Thread tidak memiliki properti yang diperlukan');
+    expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
   });
   it('should throw error when payload did not meet data type specification', () => {
     const payload = {
@@ -19,7 +19,7 @@ describe('a AddThread entities', () => {
       date: false,
     };
 
-    expect(() => new AddThread(payload)).toThrowError('Thread tidak memenuhi spesifikasi tipe data');
+    expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 
   it('should create addThread object correctly', () => {
@@ -27,7 +27,6 @@ describe('a AddThread entities', () => {
       title: 'Lorem ipsum dolor sit amet',
       body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.',
       owner: 'user-123',
-      date: new Date(),
     };
 
     const addedThread = new AddThread(payload);
@@ -36,6 +35,5 @@ describe('a AddThread entities', () => {
     expect(addedThread.title).toEqual(payload.title);
     expect(addedThread.body).toEqual(payload.body);
     expect(addedThread.owner).toEqual(payload.owner);
-    expect(addedThread.date).toEqual(payload.date);
   });
 });
