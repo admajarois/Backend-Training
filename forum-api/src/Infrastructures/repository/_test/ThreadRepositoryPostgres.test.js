@@ -1,6 +1,7 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
@@ -60,12 +61,12 @@ describe('ThreadRepositoryPostgres', () => {
       expect(thread.body).toEqual('Thread Body');
     });
 
-    it('should throw InvariantError when thread not found', async () => {
+    it('should throw NotFoundError when thread not found', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getThreadById('thread-123')).rejects.toThrow(InvariantError);
+      await expect(threadRepositoryPostgres.getThreadById('thread-123')).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -89,7 +90,7 @@ describe('ThreadRepositoryPostgres', () => {
       expect(threads[0].body).toEqual(updatedThread.body);
     });
 
-    it('should throw InvariantError when thread not found', async () => {
+    it('should throw NotFoundError when thread not found', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
       const updatedThread = {
@@ -98,7 +99,7 @@ describe('ThreadRepositoryPostgres', () => {
       };
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.updateThread('thread-123', updatedThread)).rejects.toThrow(InvariantError);
+      await expect(threadRepositoryPostgres.updateThread('thread-123', updatedThread)).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -116,12 +117,12 @@ describe('ThreadRepositoryPostgres', () => {
       expect(threads).toHaveLength(0);
     });
 
-    it('should throw InvariantError when thread not found', async () => {
+    it('should throw NotFoundError when thread not found', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.deleteThread('thread-123')).rejects.toThrow(InvariantError);
+      await expect(threadRepositoryPostgres.deleteThread('thread-123')).rejects.toThrow(NotFoundError);
     });
   });
 });

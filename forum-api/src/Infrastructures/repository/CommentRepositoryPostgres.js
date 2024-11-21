@@ -44,7 +44,13 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
-    const comments = result.rows.map((comment) => new DetailComment({ ...comment }));
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Komentar tidak ditemukan');
+    }
+    const comments = result.rows.map((comment) => {
+      comment.date = comment.date.toISOString();
+      return new DetailComment({ ...comment });
+    });
     return comments;
   }
 
@@ -84,6 +90,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (result.rowCount === 0) {
       throw new NotFoundError('Comment tidak ditemukan');
     }
+    result.rows[0].date = result.rows[0].date.toISOString();
     return new DetailComment({ ...result.rows[0] });
   }
 

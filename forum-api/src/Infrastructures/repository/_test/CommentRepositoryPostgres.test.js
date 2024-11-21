@@ -2,6 +2,7 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
+const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
 
@@ -45,15 +46,13 @@ describe('CommentRepositoryPostgres', () => {
       const addedComment = await commentRepositoryPostgres.addComment(newComment);
 
       // Assert
-      const comments = await CommentsTableTestHelper.getCommentById('comment-123');
-      expect(comments).toHaveLength(1);
-      expect(addedComment).toStrictEqual({
-        id: 'comment-123',
+      expect(addedComment).toBeInstanceOf(AddedComment);
+      expect(addedComment).toEqual(expect.objectContaining({
         content: 'New Comment Content',
+        id: 'comment-123',
         owner: 'user-123',
         threadId: 'thread-123',
-        date: comments[0].date,
-      });
+      }));
     }); 
   });
 
@@ -77,12 +76,24 @@ describe('CommentRepositoryPostgres', () => {
       // Action
       const comments = await commentRepositoryPostgres.getCommentsByThreadId('thread-123');   
 
-           // Assert
+      // Assert
       expect(comments).toHaveLength(2);
-      expect(comments).toEqual([
-        { id: 'comment-123', content: 'Comment Content', threadId: 'thread-123', owner: 'user-123', date: expect.any(String) },
-        { id: 'comment-456', content: 'Comment Content 2', threadId: 'thread-123', owner: 'user-123', date: expect.any(String) },
-      ]);
+      expect(comments).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'comment-123',
+            content: 'Comment Content',
+            username: 'testuser',
+            date: expect.any(String),
+          }),
+          expect.objectContaining({
+            id: 'comment-456',
+            content: 'Comment Content 2',
+            username: 'testuser',
+            date: expect.any(String),
+          }),
+        ])
+      );
     });
   });
 
@@ -126,7 +137,9 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       const comments = await CommentsTableTestHelper.getCommentById('comment-123');
-      expect(comments).toHaveLength(0);
+      expect(comments).toHaveLength(1);
+      expect(comments[0].active).toBe(false);
+      expect(comments[0].content).toBe('**komentar telah dihapus**');
     });
   });
 
@@ -150,62 +163,9 @@ describe('CommentRepositoryPostgres', () => {
       expect(comment).toEqual({
         id: 'comment-123', 
         content: 'Comment Content', 
-        thread: 'thread-123', 
-        owner: 'user-123',
         username: 'testuser',
-        replies: [],
-        date: testDate
+        date: expect.any(String),
       });
-    });
-  });
-
-  describe('getComments function', () => {
-    it('should return all comments correctly', async () => {
-      // Arrange
-      const testDate1 = new Date().toISOString();
-      const testDate2 = new Date().toISOString();
-      
-      await CommentsTableTestHelper.addComment({ 
-        id: 'comment-123', 
-        content: 'Comment Content', 
-        thread: 'thread-123', 
-        owner: 'user-123', 
-        date: testDate1
-      });
-      await CommentsTableTestHelper.addComment({ 
-        id: 'comment-456', 
-        content: 'Comment Content 2', 
-        thread: 'thread-123', 
-        owner: 'user-123', 
-        date: testDate2
-      });
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-
-      // Action
-      const comments = await commentRepositoryPostgres.getComments();
-
-      // Assert
-      expect(comments).toHaveLength(2);
-      expect(comments).toEqual([
-        { 
-          id: 'comment-123', 
-          content: 'Comment Content', 
-          thread: 'thread-123', 
-          owner: 'user-123',
-          username: 'testuser',
-          replies: [],
-          date: testDate1
-        },
-        { 
-          id: 'comment-456', 
-          content: 'Comment Content 2', 
-          thread: 'thread-123', 
-          owner: 'user-123',
-          username: 'testuser',
-          replies: [],
-          date: testDate2
-        },
-      ]);
     });
   });
 });

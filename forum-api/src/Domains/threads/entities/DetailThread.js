@@ -8,7 +8,7 @@ class DetailThread {
     this.id = id;
     this.title = title;
     this.body = body;
-    this.date = new Date(date).toISOString();
+    this.date = date;
     this.username = username;
   }
 

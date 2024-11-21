@@ -1,12 +1,12 @@
 const AddReplyUseCase = require('../../../../Applications/use_case/replies/AddReplyUseCase');
 const DeleteReplyUseCase = require('../../../../Applications/use_case/replies/DeleteReplyUseCase');
-const autoBind = require('auto-bind');
 
 class RepliesHandler {
   constructor(container) {
     this._container = container;
 
-    autoBind(this);
+    this.postReplyHandler = this.postReplyHandler.bind(this);
+    this.deleteReplyHandler = this.deleteReplyHandler.bind(this);
   }
 
   async postReplyHandler(request, h) {
