@@ -30,4 +30,36 @@ describe('DeleteThreadUseCase', () => {
     expect(deletedThread).toStrictEqual(mockDeletedThread);
     expect(mockThreadRepository.deleteThread).toHaveBeenCalledWith(new DeleteThread(useCasePayload));
   });
+  
+  it('should throw error when deleting thread with incomplete payload', async () => {
+    // Arrange
+    const useCasePayload = {
+      // id is missing
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    // Creating use case instance
+    const deleteThreadUseCase = new DeleteThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(deleteThreadUseCase.execute(useCasePayload)).rejects.toThrowError('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+  });
+
+  it('should throw error when deleting thread with invalid data type', async () => {
+    // Arrange
+    const useCasePayload = {
+      id: 123, // id should be a string
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    // Creating use case instance
+    const deleteThreadUseCase = new DeleteThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(deleteThreadUseCase.execute(useCasePayload)).rejects.toThrowError('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
 });

@@ -8,9 +8,7 @@ class DetailCommentUseCase {
   async execute(useCasePayload) {
     const { commentId } = useCasePayload;
     const comment = await this._commentRepository.getCommentById(commentId);
-    const user = await this._userRepository.getUserById(comment.owner);
-    const replies = await this._replyRepository.getRepliesByCommentId(commentId);
-    return new DetailComment({ ...comment, username: user.username, replies });
+    return new DetailComment({ ...comment });
   }
 }
 

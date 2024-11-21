@@ -34,4 +34,40 @@ describe('AddThreadUseCase', () => {
     expect(addedThread).toStrictEqual(mockAddedThread);
     expect(mockThreadRepository.addThread).toHaveBeenCalledWith(new AddThread(useCasePayload));
   });
+
+  it('should throw error when adding thread with incomplete payload', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 'Thread Title',
+      // body is missing
+      owner: 'user-123',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    // Creating use case instance
+    const addThreadUseCase = new AddThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(addThreadUseCase.execute(useCasePayload)).rejects.toThrowError('ADD_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
+  });
+
+  it('should throw error when adding thread with invalid data type', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 'Thread Title',
+      body: 123, // body should be a string
+      owner: 'user-123',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    // Creating use case instance
+    const addThreadUseCase = new AddThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    // Action and Assert
+    await expect(addThreadUseCase.execute(useCasePayload)).rejects.toThrowError('ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
 });
