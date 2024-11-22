@@ -1,6 +1,5 @@
 class GetReply {
   constructor(payload) {
-    payload.date = new Date(payload.date).toISOString();
     this._verifyPayload(payload);
 
     const { id, content, date, username, commentId } = payload;

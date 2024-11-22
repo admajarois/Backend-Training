@@ -14,11 +14,11 @@ class AddReply {
 
   _verifyPayload({ content, threadId, commentId, owner }) {
     if (!content || !threadId || !commentId || !owner) {
-      throw new InvariantError('tidak dapat membuat balasan');
+      throw new Error('ADD_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
     if (typeof content !== 'string' || typeof threadId !== 'string' || typeof commentId !== 'string' || typeof owner !== 'string') {
-      throw new InvariantError('Reply tidak memenuhi spesifikasi tipe data');
+      throw new Error('ADD_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }

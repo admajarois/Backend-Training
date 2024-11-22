@@ -1,0 +1,128 @@
+const pool = require('../../database/postgres/pool');
+const RepliesRepositoryPostgres = require('../RepliesRepositoryPostgres');
+const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const AddedReply = require('../../../Domains/replies/entites/AddedReply');
+const DeletedReply = require('../../../Domains/replies/entites/DeletedReply');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
+
+describe('RepliesRepositoryPostgres', () => {
+  beforeEach(async () => {
+    await UsersTableTestHelper.addUser({
+      id: 'user-123',
+      username: 'testuser',
+      password: 'password',
+      fullname: 'Test User',
+    });
+    await ThreadsTableTestHelper.addThread({
+      id: 'thread-123',
+      title: 'Thread Title',
+      body: 'Thread Body',
+      owner: 'user-123',
+    });
+    await CommentsTableTestHelper.addComment({
+      id: 'comment-123',
+      content: 'Comment Body',
+      owner: 'user-123',
+      threadId: 'thread-123',
+    });
+    await RepliesTableTestHelper.addReply({
+      id: 'reply-123',
+      content: 'Reply Body',
+      owner: 'user-123',
+      commentId: 'comment-123',
+    });
+  });
+  afterEach(async () => {
+    await UsersTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await CommentsTableTestHelper.cleanTable();
+    await RepliesTableTestHelper.cleanTable();
+  });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+
+  describe('postReply function', () => {
+    it('should persist and return added reply correctly', async () => {
+      // Arrange
+      const addReply = {
+        content: 'a reply',
+        owner: 'user-123',
+        commentId: 'comment-123',
+      };
+      const fakeIdGenerator = () => '456'; // stub!
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const addedReply = await repliesRepositoryPostgres.postReply(addReply);
+
+      // Assert
+      expect(addedReply).toStrictEqual(new AddedReply({
+        id: 'reply-456',
+        content: 'a reply',
+        owner: 'user-123',
+      }));
+    });
+  });
+
+  describe('deleteReply function', () => {
+    it('should update reply to inactive and return deleted reply correctly', async () => {
+      // Arrange
+      const deleteReply = {
+        id: 'reply-123',
+      };
+
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, {});
+
+      // Action
+      const deletedReply = await repliesRepositoryPostgres.deleteReply(deleteReply);
+
+      // Assert
+      expect(deletedReply).toStrictEqual(new DeletedReply({
+        id: 'reply-123',
+        content: '**balasan telah dihapus**',
+        owner: 'user-123',
+        active: false,
+      }));
+    });
+  });
+
+  describe('verifyReplyOwner function', () => {
+    it('should throw NotFoundError when reply not found', async () => {
+      // Arrange
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, {});
+
+      // Ensure the reply does not exist in the database
+      // You might need to add a step here to delete the reply if it exists
+
+      // Action & Assert
+      await expect(repliesRepositoryPostgres.verifyReplyOwner('reply-456', 'user-123'))
+        .rejects.toThrowError(NotFoundError);
+    });
+
+    it('should throw AuthorizationError when owner does not match', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123'; // stub!
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action & Assert
+      await expect(repliesRepositoryPostgres.verifyReplyOwner('reply-123', 'user-456'))
+        .rejects.toThrowError(AuthorizationError);
+    });
+
+    it('should not throw error when owner matches', async () => {
+      // Arrange
+      const fakeIdGenerator = () => '123'; // stub!
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action & Assert
+      await expect(repliesRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123'))
+        .resolves.not.toThrowError();
+    });
+  });
+});

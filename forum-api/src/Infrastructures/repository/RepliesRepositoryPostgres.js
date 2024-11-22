@@ -24,6 +24,7 @@ class RepliesRepositoryPostgres {
     if (result.rows[0].owner !== owner) {
       throw new AuthorizationError('reply tidak dapat diakses');
     }
+    return result.rows[0].id;
   }
 
   async postReply(addReply) {
@@ -56,7 +57,10 @@ class RepliesRepositoryPostgres {
       values: [commentIds],
     };
     const result = await this._pool.query(query);
-    return result.rows.map(reply => new GetReply({ ...reply }));
+    return result.rows.map(reply => {
+      reply.date = reply.date.toISOString();
+      return new GetReply({ ...reply });
+    });
   }
 }
 
