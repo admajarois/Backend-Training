@@ -54,7 +54,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     return comments;
   }
 
-  async verifyCommentOwner(commentId, userId) {
+  async verifyCommentAccess(commentId, userId) {
     const query = {
       text: 'SELECT owner FROM comments WHERE id = $1 AND active = true',
       values: [commentId],

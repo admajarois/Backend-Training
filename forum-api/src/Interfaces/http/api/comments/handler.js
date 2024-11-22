@@ -44,7 +44,7 @@ class CommentsHandler {
     const { threadId, commentId } = request.params;
     const { id: owner } = request.auth.credentials;
 
-    await this._container.verifyCommentOwner(commentId, owner);
+    await this._container.verifyCommentAccess(commentId, owner);
     const updatedComment = await this._container.updateComment(threadId, commentId, request.payload);
 
     return {

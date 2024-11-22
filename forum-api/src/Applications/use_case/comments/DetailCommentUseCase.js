@@ -1,8 +1,8 @@
+const DetailComment = require('../../../Domains/comments/entities/DetailComment');
+
 class DetailCommentUseCase {
-  constructor({ commentRepository, userRepository, replyRepository }) {
+  constructor({ commentRepository }) {
     this._commentRepository = commentRepository;
-    this._userRepository = userRepository;
-    this._replyRepository = replyRepository;
   }
 
   async execute(useCasePayload) {

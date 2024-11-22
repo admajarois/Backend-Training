@@ -6,6 +6,7 @@ class UpdateCommentUseCase {
   }
 
   async execute(useCasePayload) {
+    await this._commentRepository.verifyCommentAccess(useCasePayload.id, useCasePayload.owner);
     const updateComment = new UpdateComment(useCasePayload);
     await this._commentRepository.updateComment(updateComment);
   }
