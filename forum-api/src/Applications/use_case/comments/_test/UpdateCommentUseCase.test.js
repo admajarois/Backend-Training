@@ -18,7 +18,7 @@ describe('UpdateCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockResolvedValue();
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockResolvedValue();
     mockCommentRepository.verifyCommentAccess = jest.fn().mockResolvedValue();
     mockCommentRepository.updateComment = jest.fn().mockResolvedValue();
 
@@ -68,7 +68,7 @@ describe('UpdateCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockResolvedValue();
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockResolvedValue();
     mockCommentRepository.verifyCommentAccess = jest.fn().mockRejectedValue(new AuthorizationError('FORBIDDEN'));
     mockCommentRepository.updateComment = jest.fn();
 

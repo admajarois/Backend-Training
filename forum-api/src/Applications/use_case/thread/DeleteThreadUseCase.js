@@ -6,6 +6,8 @@ class DeleteThreadUseCase {
   }
 
   async execute(useCasePayload) {
+    await this._threadRepository.verifyThreadAvailability(useCasePayload.id);
+    await this._threadRepository.verifyThreadAccess(useCasePayload.id, useCasePayload.owner);
     const deleteThread = new DeleteThread(useCasePayload);
     return this._threadRepository.deleteThread(deleteThread);
   }

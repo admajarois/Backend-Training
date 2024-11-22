@@ -7,13 +7,13 @@ class DeleteThread {
     this.id = id;
   } 
 
-  _verifyPayload({ id }) {
+  _verifyPayload({ id, owner }) {
     
-    if (!id) {
+    if (!id || !owner) {
       throw new Error('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string') {
+    if (typeof id !== 'string' || typeof owner !== 'string') {
       throw new Error('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

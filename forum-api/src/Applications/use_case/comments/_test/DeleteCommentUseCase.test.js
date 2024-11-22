@@ -16,7 +16,7 @@ describe('DeleteCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
     mockCommentRepository.verifyCommentAccess = jest.fn().mockImplementation(() => Promise.resolve());
     mockCommentRepository.deleteComment = jest.fn().mockImplementation(() => Promise.resolve());
 
@@ -30,7 +30,7 @@ describe('DeleteCommentUseCase', () => {
     await deleteCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockThreadRepository.verifyThreadAccess).toHaveBeenCalledWith(useCasePayload.threadId, useCasePayload.owner);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.verifyCommentAccess).toHaveBeenCalledWith(useCasePayload.commentId, useCasePayload.owner);
     expect(mockCommentRepository.deleteComment).toHaveBeenCalledWith(useCasePayload.commentId);
   });
@@ -46,7 +46,7 @@ describe('DeleteCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('THREAD_NOT_FOUND')));
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('THREAD_NOT_FOUND')));
 
     // Creating use case instance
     const deleteCommentUseCase = new DeleteCommentUseCase({
@@ -69,7 +69,7 @@ describe('DeleteCommentUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
     mockCommentRepository.verifyCommentAccess = jest.fn().mockImplementation(() => Promise.reject(new AuthorizationError('FORBIDDEN')));
 
     // Creating use case instance

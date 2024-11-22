@@ -21,7 +21,7 @@ describe('AddCommentUseCase', () => {
     });
 
     const mockThreadRepository = {
-      verifyThreadAccess: jest.fn().mockResolvedValue(true),
+      verifyThreadAvailability: jest.fn().mockResolvedValue(true),
       // ... other methods
     };
     const mockCommentRepository = new CommentRepository();
@@ -39,7 +39,7 @@ describe('AddCommentUseCase', () => {
 
     // Assert
     expect(addedComment).toStrictEqual(mockAddedComment);
-    expect(mockThreadRepository.verifyThreadAccess).toHaveBeenCalledWith(useCasePayload.threadId, useCasePayload.owner);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.addComment).toHaveBeenCalledWith(new AddComment(useCasePayload));
   });
 
@@ -52,12 +52,12 @@ describe('AddCommentUseCase', () => {
     };
 
     const mockThreadRepository = {
-      verifyThreadAccess: jest.fn().mockResolvedValue(true),
+      verifyThreadAvailability: jest.fn().mockResolvedValue(true),
       // ... other methods
     };
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('THREAD_NOT_FOUND')));
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('THREAD_NOT_FOUND')));
 
     // Creating use case instance
     const addCommentUseCase = new AddCommentUseCase({
@@ -78,7 +78,7 @@ describe('AddCommentUseCase', () => {
     };
 
     const mockThreadRepository = {
-      verifyThreadAccess: jest.fn().mockResolvedValue(true),
+      verifyThreadAvailability: jest.fn().mockResolvedValue(true),
       // ... other methods
     };
     const mockCommentRepository = new CommentRepository();
@@ -102,7 +102,7 @@ describe('AddCommentUseCase', () => {
     };
 
     const mockThreadRepository = {
-      verifyThreadAccess: jest.fn().mockResolvedValue(true),
+      verifyThreadAvailability: jest.fn().mockResolvedValue(true),
       // ... other methods
     };
     const mockCommentRepository = new CommentRepository();

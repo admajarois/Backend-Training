@@ -7,15 +7,19 @@ describe('DeleteThreadUseCase', () => {
     // Arrange
     const useCasePayload = {
       id: 'thread-123',
+      owner: 'user-123',
     };
 
     const mockDeletedThread = new DeleteThread({
       id: useCasePayload.id,
+      owner: useCasePayload.owner,
     });
 
     const mockThreadRepository = new ThreadRepository()
 
     // Mocking
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
     mockThreadRepository.deleteThread = jest.fn().mockImplementation(() => Promise.resolve(mockDeletedThread));
 
     // Creating use case instance
@@ -44,6 +48,8 @@ describe('DeleteThreadUseCase', () => {
     });
 
     // Action and Assert
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new Error('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')));
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.reject(new Error('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')));
     await expect(deleteThreadUseCase.execute(useCasePayload)).rejects.toThrowError('DELETE_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
   });
 
@@ -52,7 +58,7 @@ describe('DeleteThreadUseCase', () => {
     const useCasePayload = {
       id: 123, // id should be a string
     };
-
+    
     const mockThreadRepository = new ThreadRepository();
     // Creating use case instance
     const deleteThreadUseCase = new DeleteThreadUseCase({
@@ -60,6 +66,8 @@ describe('DeleteThreadUseCase', () => {
     });
 
     // Action and Assert
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new Error('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')));
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.reject(new Error('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')));
     await expect(deleteThreadUseCase.execute(useCasePayload)).rejects.toThrowError('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
 });

@@ -12,17 +12,17 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     this._idGenerator = idGenerator;
   }
 
-  async verifyThreadAccess(threadId, userId) {
-    const thread = await this.getThreadById(threadId);
+  async verifyThreadAccess(id, userId) {
+    const thread = await this.getThreadById(id);
     if (thread.owner !== userId) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
   }
 
-  async verifyThreadAvailability(threadId) {
+  async verifyThreadAvailability(id) {
     const query = {
       text: 'SELECT * FROM threads WHERE id = $1',
-      values: [threadId],
+      values: [id],
     };
     const result = await this._pool.query(query);
     if (result.rowCount === 0) {
@@ -45,10 +45,11 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return new AddedThread({ ...result.rows[0] });
   }
 
-  async getThreadById(threadId) {
+  async getThreadById(id) {
+    await this.verifyThreadAvailability(id);
     const query = {
       text: 'SELECT threads.*, users.username FROM threads JOIN users ON threads.owner = users.id WHERE threads.id = $1',
-      values: [threadId],
+      values: [id],
     };
     const result = await this._pool.query(query);
     if (result.rowCount === 0) {
@@ -65,18 +66,18 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return result.rows;
   }
 
-  async deleteThread(threadId) {
-    await this.getThreadById(threadId);
+  async deleteThread(id) {
+    await this.verifyThreadAvailability(id);
     const query = 'DELETE FROM threads WHERE id = $1';
-    await this._pool.query(query, [threadId]);
+    await this._pool.query(query, [id]);
   }
 
-  async updateThread(threadId, updatedThread) {
+  async updateThread(id, updatedThread) {
+    await this.verifyThreadAvailability(id);
     const { title, body } = updatedThread;
-    await this.getThreadById(threadId);
     const query = {
       text: 'UPDATE threads SET title = $1, body = $2 WHERE id = $3 RETURNING id, title, body',
-      values: [title, body, threadId],
+      values: [title, body, id],
     };
 
     const result = await this._pool.query(query);

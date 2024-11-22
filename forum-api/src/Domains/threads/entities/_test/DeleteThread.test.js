@@ -10,6 +10,7 @@ describe('a DeleteThread entities', () => {
   it('should throw error when payload did not meet data type specification', () => {
     const payload = {
       id: 123,
+      owner: 'user-123',
     };
 
     expect(() => new DeleteThread(payload)).toThrowError('DELETE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
@@ -18,6 +19,7 @@ describe('a DeleteThread entities', () => {
   it('should create deleteThread object correctly', () => {
     const payload = {
       id: 'thread-123',
+      owner: 'user-123',
     };
 
     const deleteThread = new DeleteThread(payload);

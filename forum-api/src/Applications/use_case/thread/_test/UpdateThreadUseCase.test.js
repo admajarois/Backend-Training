@@ -23,7 +23,9 @@ describe('UpdateThreadUseCase', () => {
 
     // Mocking
     mockThreadRepository.updateThread = jest.fn().mockImplementation(() => Promise.resolve(mockUpdatedThread));
-    
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
+  
     // Creating use case instance
     const updateThreadUseCase = new UpdateThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -55,6 +57,9 @@ describe('UpdateThreadUseCase', () => {
     };
 
     const mockThreadRepository = new ThreadRepository();
+    // Mocking
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
     // Creating use case instance
     const updateThreadUseCase = new UpdateThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -74,6 +79,9 @@ describe('UpdateThreadUseCase', () => {
     };
 
     const mockThreadRepository = new ThreadRepository();
+    // Mocking
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
     // Creating use case instance
     const updateThreadUseCase = new UpdateThreadUseCase({
       threadRepository: mockThreadRepository,

@@ -8,6 +8,7 @@ const pool = require('../../database/postgres/pool');
 describe('ThreadRepositoryPostgres', () => {
   beforeEach(async () => {
     await UsersTableTestHelper.addUser({ id: 'user-123', username: 'testuser', password: 'password', fullname: 'Test User' });
+    await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
   });
   afterEach(async () => {
     await ThreadsTableTestHelper.cleanTable();
@@ -45,7 +46,6 @@ describe('ThreadRepositoryPostgres', () => {
   describe('findThreadById function', () => {
     it('should return thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
@@ -63,14 +63,13 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getThreadById('thread-123')).rejects.toThrow(NotFoundError);
+      await expect(threadRepositoryPostgres.getThreadById('thread-1545')).rejects.toThrow(NotFoundError);
     });
   });
 
   describe('updateThreadById function', () => {
     it('should update thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
       const updatedThread = {
         title: 'Updated Title',
@@ -79,7 +78,6 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Action
       await threadRepositoryPostgres.updateThread('thread-123', updatedThread);
-
       // Assert
       const threads = await ThreadsTableTestHelper.getThreadById('thread-123');
       expect(threads).toHaveLength(1);
@@ -96,14 +94,13 @@ describe('ThreadRepositoryPostgres', () => {
       };
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.updateThread('thread-123', updatedThread)).rejects.toThrow(NotFoundError);
+      await expect(threadRepositoryPostgres.updateThread('thread-1545', updatedThread)).rejects.toThrow(NotFoundError);
     });
   });
 
   describe('deleteThreadById function', () => {
     it('should delete thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', title: 'Thread Title', body: 'Thread Body', owner: 'user-123' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
@@ -119,7 +116,7 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.deleteThread('thread-123')).rejects.toThrow(NotFoundError);
+      await expect(threadRepositoryPostgres.deleteThread('thread-1545')).rejects.toThrow(NotFoundError);
     });
   });
 });
