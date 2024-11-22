@@ -103,6 +103,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (result.rowCount === 0) {
       throw new NotFoundError('Comment tidak ditemukan');
     }
+    return result.rows[0].id;
   }
 
 }
