@@ -34,7 +34,7 @@ class RepliesHandler {
 
     return {
       status: 'success',
-      message: 'balasan berhasil dihapus',
+      message: 'Balasan berhasil dihapus',
     };
   }
 }

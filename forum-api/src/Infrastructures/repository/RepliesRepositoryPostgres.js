@@ -19,10 +19,10 @@ class RepliesRepositoryPostgres {
 
     const result = await this._pool.query(query);
     if (result.rowCount === 0) {
-      throw new NotFoundError('reply tidak ditemukan');
+      throw new NotFoundError('Balasan tidak ditemukan');
     }
     if (result.rows[0].owner !== owner) {
-      throw new AuthorizationError('reply tidak dapat diakses');
+      throw new AuthorizationError('Gagal mengakses resource');
     }
     return result.rows[0].id;
   }

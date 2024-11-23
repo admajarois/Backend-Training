@@ -35,7 +35,7 @@ class CommentsHandler {
 
     return {
       status: 'success',
-      message: 'komentar berhasil dihapus',
+      message: 'Komentar berhasil dihapus',
     };
   }
 
@@ -51,6 +51,19 @@ class CommentsHandler {
       status: 'success',
       data: {
         updatedComment,
+      },
+    };
+  }
+
+  async getCommentHandler(request, h) {
+    const { threadId, commentId } = request.params;
+    const getCommentUseCase = this._container.getInstance(GetCommentUseCase.name);
+    const comment = await getCommentUseCase.execute(threadId, commentId);
+
+    return {
+      status: 'success',
+      data: {
+        comment,
       },
     };
   }

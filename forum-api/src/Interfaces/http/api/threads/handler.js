@@ -61,6 +61,7 @@ class ThreadsHandler {
 
         const response = h.response({
             status: 'success',
+            message: 'Thread berhasil dihapus',
         });
         return response;
     }
