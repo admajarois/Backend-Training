@@ -56,7 +56,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async verifyCommentAccess(commentId, userId) {
     const query = {
-      text: 'SELECT owner FROM comments WHERE id = $1 AND active = true',
+      text: 'SELECT id, owner FROM comments WHERE id = $1 AND active = true',
       values: [commentId],
     };
     const result = await this._pool.query(query);
@@ -71,7 +71,6 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async updateComment(commentId, updateComment) {
     const { content } = updateComment;
-
     const query = {
       text: 'UPDATE comments SET content = $1 WHERE id = $2 RETURNING id, content, owner',
       values: [content, commentId],

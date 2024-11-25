@@ -40,6 +40,14 @@ describe('ThreadRepositoryPostgres', () => {
         body: 'This is the body of the new thread.',
         owner: 'user-123',
       });
+
+      // Verify persistency
+      const threads = await ThreadsTableTestHelper.getThreadById('thread-456');
+      expect(threads).toHaveLength(1);
+      expect(threads[0].id).toEqual('thread-456');
+      expect(threads[0].title).toEqual('New Thread Title');
+      expect(threads[0].body).toEqual('This is the body of the new thread.');
+      expect(threads[0].owner).toEqual('user-123');
     });
   });
 
@@ -50,12 +58,14 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Action
       const thread = await threadRepositoryPostgres.getThreadById('thread-123');
+      const { id, title, body, username } = thread;
 
       // Assert
       expect(thread).toBeDefined();
-      expect(thread.id).toEqual('thread-123');
-      expect(thread.title).toEqual('Thread Title');
-      expect(thread.body).toEqual('Thread Body');
+      expect(id).toEqual('thread-123');
+      expect(title).toEqual('Thread Title');
+      expect(body).toEqual('Thread Body');
+      expect(username).toEqual('testuser');
     });
 
     it('should throw NotFoundError when thread not found', async () => {
