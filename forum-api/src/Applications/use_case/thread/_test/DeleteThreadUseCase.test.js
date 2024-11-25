@@ -20,7 +20,10 @@ describe('DeleteThreadUseCase', () => {
     // Mocking
     mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
     mockThreadRepository.verifyThreadAccess = jest.fn().mockImplementation(() => Promise.resolve());
-    mockThreadRepository.deleteThread = jest.fn().mockImplementation(() => Promise.resolve(mockDeletedThread));
+    mockThreadRepository.deleteThread = jest.fn().mockImplementation(() => Promise.resolve(new DeleteThread({
+      id: useCasePayload.id,
+      owner: useCasePayload.owner,
+    })));
 
     // Creating use case instance
     const deleteThreadUseCase = new DeleteThreadUseCase({

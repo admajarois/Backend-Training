@@ -11,12 +11,12 @@ describe('DetailCommentUseCase', () => {
       username: 'user123',
     };
 
-    const mockCommentDetail = {
+    const mockCommentDetail = new DetailComment({
       id: 'comment-123',
       content: 'Comment Content',
       username: 'user123',
       date: '2021-08-08T07:19:09.775Z',
-    };
+    });
 
     const mockCommentRepository = new CommentRepository();
     // Mocking
@@ -31,7 +31,7 @@ describe('DetailCommentUseCase', () => {
     const commentDetail = await detailCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(commentDetail).toStrictEqual(new DetailComment(mockCommentDetail));
+    expect(commentDetail).toStrictEqual(mockCommentDetail);
     expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.commentId);
   });
 
@@ -41,18 +41,20 @@ describe('DetailCommentUseCase', () => {
       commentId: 'comment-456',
     };
 
+    const mockCommentDetail = new DetailComment({
+      id: 'comment-123',
+      content: 'Comment Content',
+      username: 'user123',
+      date: '2021-08-08T07:19:09.775Z',
+    });
+
     const mockCommentRepository = new CommentRepository();
     // Mocking
     mockCommentRepository.getCommentById = jest.fn().mockImplementation((commentId) => {
       if (commentId === 'comment-456') {
         return Promise.reject(new NotFoundError('Comment tidak ditemukan'));
       }
-      return Promise.resolve({
-        id: 'comment-123',
-        content: 'Comment Content',
-        username: 'user123',
-        date: '2021-08-08T07:19:09.775Z',
-      });
+      return Promise.resolve(mockCommentDetail);
     });
 
     // Creating use case instance

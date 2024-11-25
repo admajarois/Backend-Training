@@ -66,6 +66,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (result.rows[0].owner !== userId) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
+    return result.rows[0].id;
   }
 
   async updateComment(commentId, updateComment) {

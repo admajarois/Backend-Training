@@ -9,9 +9,6 @@ class DeletedComment {
   }
 
   _verifyPayload({ id, content, active }) {
-    if (active) {
-      throw new Error('DELETED_COMMENT.ACTIVE_MUST_BE_FALSE');
-    }
     if (!id || !content || active === undefined) {
       throw new Error('DELETED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }

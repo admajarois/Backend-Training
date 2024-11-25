@@ -13,12 +13,20 @@ describe('DeleteCommentUseCase', () => {
       owner: 'user-123',
     };
 
+    const mockThreadId = useCasePayload.threadId;
+    const mockCommentId = useCasePayload.commentId;
+    const mockOwner = useCasePayload.owner;
+
+    const mockDeletedComment = {
+      id: mockCommentId,
+    };
+
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
-    mockCommentRepository.verifyCommentAccess = jest.fn().mockImplementation(() => Promise.resolve());
-    mockCommentRepository.deleteComment = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve(mockThreadId));
+    mockCommentRepository.verifyCommentAccess = jest.fn().mockImplementation(() => Promise.resolve(mockCommentId));
+    mockCommentRepository.deleteComment = jest.fn().mockImplementation(() => Promise.resolve(mockDeletedComment));
 
     // Creating use case instance
     const deleteCommentUseCase = new DeleteCommentUseCase({
@@ -30,9 +38,9 @@ describe('DeleteCommentUseCase', () => {
     await deleteCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(useCasePayload.threadId);
-    expect(mockCommentRepository.verifyCommentAccess).toHaveBeenCalledWith(useCasePayload.commentId, useCasePayload.owner);
-    expect(mockCommentRepository.deleteComment).toHaveBeenCalledWith(useCasePayload.commentId);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(mockThreadId);
+    expect(mockCommentRepository.verifyCommentAccess).toHaveBeenCalledWith(mockCommentId, mockOwner);
+    expect(mockCommentRepository.deleteComment).toHaveBeenCalledWith(mockCommentId);
   });
 
   it('should throw error when deleting comment from non-existent thread', async () => {
@@ -66,10 +74,12 @@ describe('DeleteCommentUseCase', () => {
       owner: 'user-123',
     };
 
+    const mockThreadId = useCasePayload.threadId;
+
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve(mockThreadId));
     mockCommentRepository.verifyCommentAccess = jest.fn().mockImplementation(() => Promise.reject(new AuthorizationError('FORBIDDEN')));
 
     // Creating use case instance

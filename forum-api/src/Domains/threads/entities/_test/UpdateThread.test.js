@@ -33,4 +33,15 @@ describe('a UpdateThread entities', () => {
     expect(updateThread.body).toEqual(payload.body);
     expect(updateThread.owner).toEqual(payload.owner);
   });
+
+  it('should throw error when payload does not meet data type specification', () => {
+    const payload = {
+      id: 123,
+      title: 123,
+      body: 123,
+      owner: 123,
+    };
+
+    expect(() => new UpdateThread(payload)).toThrowError('UPDATE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
 });
