@@ -13,10 +13,18 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async verifyThreadAccess(id, userId) {
-    const thread = await this.getThreadById(id);
-    if (thread.owner !== userId) {
+    const query = {
+      text: 'SELECT * FROM threads WHERE id = $1',
+      values: [id],
+    };
+    const result = await this._pool.query(query);
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Thread tidak ditemukan');
+    }
+    if (result.rows[0].owner !== userId) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
+    return result.rows[0].id;
   }
 
   async verifyThreadAvailability(id) {
@@ -28,7 +36,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     if (result.rowCount === 0) {
       throw new NotFoundError('Thread tidak ditemukan');
     }
-    return result.rows[0].id;
+    const thread = result.rows[0];
+    return thread.id;
   }
 
   async addThread(newThread) {
@@ -46,7 +55,6 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async getThreadById(id) {
-    await this.verifyThreadAvailability(id);
     const query = {
       text: 'SELECT threads.*, users.username FROM threads JOIN users ON threads.owner = users.id WHERE threads.id = $1',
       values: [id],
@@ -67,13 +75,14 @@ class ThreadRepositoryPostgres extends ThreadRepository {
   }
 
   async deleteThread(id) {
-    await this.verifyThreadAvailability(id);
-    const query = 'DELETE FROM threads WHERE id = $1';
-    await this._pool.query(query, [id]);
+    const query = {
+      text: 'DELETE FROM threads WHERE id = $1',
+      values: [id],
+    };
+    await this._pool.query(query);
   }
 
   async updateThread(id, updatedThread) {
-    await this.verifyThreadAvailability(id);
     const { title, body } = updatedThread;
     const query = {
       text: 'UPDATE threads SET title = $1, body = $2 WHERE id = $3 RETURNING id, title, body',

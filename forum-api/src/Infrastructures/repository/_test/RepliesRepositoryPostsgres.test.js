@@ -29,6 +29,12 @@ describe('RepliesRepositoryPostgres', () => {
       owner: 'user-123',
       threadId: 'thread-123',
     });
+    await CommentsTableTestHelper.addComment({
+      id: 'comment-456',
+      content: 'Another Comment Body',
+      owner: 'user-123',
+      threadId: 'thread-123',
+    });
     await RepliesTableTestHelper.addReply({
       id: 'reply-123',
       content: 'Reply Body',
@@ -123,6 +129,54 @@ describe('RepliesRepositoryPostgres', () => {
       // Action & Assert
       await expect(repliesRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123'))
         .resolves.not.toThrowError();
+    });
+  });
+
+  describe('getRepliesByCommentIds function', () => {
+    it('should return empty array when comment ids is empty', async () => {
+      // Arrange
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, {});
+
+      // Action
+      const replies = await repliesRepositoryPostgres.getRepliesByCommentIds(['comment-54646']);
+
+      // Assert
+      expect(replies).toHaveLength(0);
+      expect(replies).toEqual([]);
+    });
+    it('should return replies by comment ids correctly', async () => {
+      // Arrange
+      const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, {});
+      await RepliesTableTestHelper.addReply({
+        id: 'reply-456',
+        content: 'Another Reply Body',
+        owner: 'user-123',
+        commentId: 'comment-456',
+      });
+
+      // Action
+      const replies = await repliesRepositoryPostgres.getRepliesByCommentIds(['comment-123', 'comment-456']);
+
+      // Assert
+      expect(replies).toHaveLength(2);
+      expect(replies).toEqual([
+        {
+          id: 'reply-123',
+          content: 'Reply Body',
+          username: 'testuser',
+          commentId: 'comment-123',
+          date: expect.any(String),
+        },
+        {
+          id: 'reply-456',
+          content: 'Another Reply Body',
+          username: 'testuser',
+          commentId: 'comment-456',
+          date: expect.any(String),
+        },
+      ]);
+      expect(replies[0].id).toEqual('reply-123');
+      expect(replies[1].id).toEqual('reply-456');
     });
   });
 });
