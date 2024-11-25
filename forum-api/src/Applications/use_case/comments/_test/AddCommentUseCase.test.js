@@ -26,7 +26,9 @@ describe('AddCommentUseCase', () => {
     };
     const mockCommentRepository = new CommentRepository();
     // Mocking
-    mockCommentRepository.addComment = jest.fn().mockImplementation(() => Promise.resolve(mockAddedComment));
+    mockCommentRepository.addComment = jest.fn().mockImplementation(() => Promise.resolve(new AddComment(
+      useCasePayload
+    )));
 
     // Creating use case instance
     const addCommentUseCase = new AddCommentUseCase({
