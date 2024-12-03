@@ -5,8 +5,6 @@ describe('DeletedReply entities', () => {
     // Arrange
     const payload = {
       id: 'reply-123',
-      content: 'a reply',
-      owner: 'user-123',
       active: false,
     };
 
@@ -15,16 +13,14 @@ describe('DeletedReply entities', () => {
 
     // Assert
     expect(deletedReply.id).toEqual(payload.id);
-    expect(deletedReply.content).toEqual(payload.content);
-    expect(deletedReply.owner).toEqual(payload.owner);
+    expect(deletedReply.content).toEqual('**Balasan telah dihapus**');
     expect(deletedReply.active).toEqual(payload.active);
   });
 
   it('should throw error when payload did not contain needed property', () => {
     // Arrange
     const payload = {
-      content: 'a reply',
-      owner: 'user-123',
+      active: false,
     };
 
     // Action and Assert
@@ -35,8 +31,6 @@ describe('DeletedReply entities', () => {
     // Arrange
     const payload = {
       id: 123,
-      content: 'a reply',
-      owner: 'user-123',
       active: true,
     };
 

@@ -148,7 +148,6 @@ describe('CommentRepositoryPostgres', () => {
       const comments = await CommentsTableTestHelper.getCommentById('comment-123');
       expect(comments).toHaveLength(1);
       expect(comments[0].active).toBe(false);
-      expect(comments[0].content).toBe('**komentar telah dihapus**');
     });
   });
 

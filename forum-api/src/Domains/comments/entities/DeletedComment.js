@@ -1,19 +1,19 @@
 class DeletedComment {
   constructor(payload) {
     this._verifyPayload(payload);
-    const { id, content, active } = payload;
+    const { id, active } = payload;
 
     this.id = id;
-    this.content = content;
+    this.content = '**Komentar telah dihapus**';
     this.active = active;
   }
 
-  _verifyPayload({ id, content, active }) {
-    if (!id || !content || active === undefined) {
+  _verifyPayload({ id, active }) {
+    if (!id || active === undefined) {
       throw new Error('DELETED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof active !== 'boolean') {
+    if (typeof id !== 'string' || typeof active !== 'boolean') {
       throw new Error('DELETED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

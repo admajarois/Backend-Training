@@ -89,10 +89,11 @@ describe('RepliesRepositoryPostgres', () => {
       const deletedReply = await repliesRepositoryPostgres.deleteReply(deleteReply);
 
       // Assert
+      const reply = await RepliesTableTestHelper.findRepliesById('reply-123');
+      expect(reply.active).toEqual(false);
       expect(deletedReply).toStrictEqual(new DeletedReply({
         id: 'reply-123',
-        content: '**balasan telah dihapus**',
-        owner: 'user-123',
+        content: '**Balasan telah dihapus**',
         active: false,
       }));
     });
@@ -126,9 +127,9 @@ describe('RepliesRepositoryPostgres', () => {
       const fakeIdGenerator = () => '123'; // stub!
       const repliesRepositoryPostgres = new RepliesRepositoryPostgres(pool, fakeIdGenerator);
 
-      // Action & Assert
-      await expect(repliesRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123'))
-        .resolves.not.toThrowError();
+      const reply = await repliesRepositoryPostgres.verifyReplyOwner('reply-123', 'user-123');
+
+      expect(reply).toEqual('reply-123');
     });
   });
 

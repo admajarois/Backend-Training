@@ -154,8 +154,10 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
+      const thread = await threadRepositoryPostgres.verifyThreadAvailability('thread-123');
+
       // Action & Assert
-      await expect(threadRepositoryPostgres.verifyThreadAvailability('thread-123')).resolves.not.toThrow();
+      expect(thread).toEqual('thread-123');
     });
   });
 });

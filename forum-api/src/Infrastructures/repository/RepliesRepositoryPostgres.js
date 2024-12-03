@@ -42,10 +42,9 @@ class RepliesRepositoryPostgres {
   async deleteReply(deleteReply) {
     const { id } = deleteReply;
     const active = false;
-    const content = '**balasan telah dihapus**';
     const query = {
-      text: 'UPDATE replies SET active = $1, content = $2 WHERE id = $3 RETURNING id, content, owner, active',
-      values: [active, content, id],
+      text: 'UPDATE replies SET active = $1 WHERE id = $2 RETURNING id, active',
+      values: [active, id],
     };
     const result = await this._pool.query(query);
     return new DeletedReply({ ...result.rows[0] });

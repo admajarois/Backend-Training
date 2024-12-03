@@ -122,17 +122,4 @@ describe('UserRepositoryPostgres', () => {
       expect(userId).toEqual('user-321');
     });
   });
-  describe('getUserById', () => {
-    it('should return user id correctly', async () => {
-      // Arrange
-      await UsersTableTestHelper.addUser({ id: 'user-321', username: 'dicoding' });
-      const userRepositoryPostgres = new UserRepositoryPostgres(pool, {});
-
-      // Action
-      const users = await userRepositoryPostgres.getUserById('user-321');
-
-      // Assert
-      expect(users).toEqual({ username: 'dicoding' });
-    });
-  });
 });

@@ -14,7 +14,7 @@ describe('DeletedComment', () => {
 
     // Assert
     expect(deletedComment.id).toEqual(payload.id);
-    expect(deletedComment.content).toEqual(payload.content);
+    expect(deletedComment.content).toEqual('**Komentar telah dihapus**');
     expect(deletedComment.active).toEqual(payload.active);
   });
 
