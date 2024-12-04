@@ -13,7 +13,7 @@ class RepliesRepositoryPostgres {
 
   async verifyReplyOwner(replyId, owner) {
     const query = {
-      text: 'SELECT owner FROM replies WHERE id = $1 AND active = true',
+      text: 'SELECT id,owner FROM replies WHERE id = $1 AND active = true',
       values: [replyId],
     };
 
@@ -24,6 +24,7 @@ class RepliesRepositoryPostgres {
     if (result.rows[0].owner !== owner) {
       throw new AuthorizationError('Gagal mengakses resource');
     }
+    console.log("owner  ", result.rows[0]);
     return result.rows[0].id;
   }
 
