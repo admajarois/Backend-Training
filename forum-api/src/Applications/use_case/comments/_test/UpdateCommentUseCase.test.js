@@ -25,14 +25,27 @@ describe('UpdateCommentUseCase', () => {
     // Creating use case instance
     const updateCommentUseCase = new UpdateCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action
+
     await updateCommentUseCase.execute(useCasePayload);
 
     // Assert
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.verifyCommentAccess).toHaveBeenCalledWith(useCasePayload.id, useCasePayload.owner);
     expect(mockCommentRepository.updateComment).toHaveBeenCalledWith({ content: useCasePayload.content, id: useCasePayload.id });
+  });
+
+  it('should throw error when thread not found', async () => {
+    const useCasePayload = {
+      id: 'comment-123',
+      content: 'Updated Comment Content',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('Thread tidak ditemukan')));
   });
 
   it('should throw error when updating comment from non-existent comment', async () => {
@@ -47,7 +60,7 @@ describe('UpdateCommentUseCase', () => {
     // Mocking
     mockCommentRepository.verifyCommentAccess = jest.fn().mockRejectedValue(new NotFoundError('Comment tidak ditemukan'));
     mockCommentRepository.updateComment = jest.fn();
-
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockResolvedValue();
     // Creating use case instance
     const updateCommentUseCase = new UpdateCommentUseCase({
       commentRepository: mockCommentRepository,

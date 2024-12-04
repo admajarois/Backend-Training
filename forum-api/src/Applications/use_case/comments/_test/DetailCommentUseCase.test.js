@@ -1,5 +1,6 @@
 const DetailCommentUseCase = require('../DetailCommentUseCase');
 const CommentRepository = require('../../../../Domains/comments/CommentRepository');
+const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const DetailComment = require('../../../../Domains/comments/entities/DetailComment');
 const NotFoundError = require('../../../../Commons/exceptions/NotFoundError');
 
@@ -19,12 +20,15 @@ describe('DetailCommentUseCase', () => {
     });
 
     const mockCommentRepository = new CommentRepository();
+    const mockThreadRepository = new ThreadRepository();
     // Mocking
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
     mockCommentRepository.getCommentById = jest.fn().mockImplementation(() => Promise.resolve(mockCommentDetail));
 
     // Creating use case instance
     const detailCommentUseCase = new DetailCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action
@@ -32,13 +36,24 @@ describe('DetailCommentUseCase', () => {
 
     // Assert
     expect(commentDetail).toStrictEqual(mockCommentDetail);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(useCasePayload.threadId);
     expect(mockCommentRepository.getCommentById).toHaveBeenCalledWith(useCasePayload.commentId);
+  });
+  it('should throw error when thread not found', async () => {
+    const useCasePayload = {
+      commentId: 'comment-123',
+      threadId: 'thread-456',
+    };
+
+    const mockThreadRepository = new ThreadRepository();
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.reject(new NotFoundError('Thread tidak ditemukan')));
   });
 
   it('should throw error when getting detail of non-existent comment', async () => {
     // Arrange
     const useCasePayload = {
       commentId: 'comment-456',
+      threadId: 'thread-123',
     };
 
     const mockCommentDetail = new DetailComment({
@@ -48,8 +63,10 @@ describe('DetailCommentUseCase', () => {
       date: '2021-08-08T07:19:09.775Z',
     });
 
+    const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     // Mocking
+    mockThreadRepository.verifyThreadAvailability = jest.fn().mockImplementation(() => Promise.resolve());
     mockCommentRepository.getCommentById = jest.fn().mockImplementation((commentId) => {
       if (commentId === 'comment-456') {
         return Promise.reject(new NotFoundError('Comment tidak ditemukan'));
@@ -60,6 +77,7 @@ describe('DetailCommentUseCase', () => {
     // Creating use case instance
     const detailCommentUseCase = new DetailCommentUseCase({
       commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
     });
 
     // Action and Assert

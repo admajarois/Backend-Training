@@ -59,10 +59,14 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId],
     };
     const result = await this._pool.query(query);
+    console.log("result", result.rows[0]);
     if (result.rowCount === 0) {
+      console.log("result.rowCount", result.rowCount);
       throw new NotFoundError('Komentar tidak ditemukan');
     }
     if (result.rows[0].owner !== userId) {
+      console.log("result.rows[0].owner", result.rows[0].owner);
+      console.log("userId", userId);
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
     return result.rows[0].id;

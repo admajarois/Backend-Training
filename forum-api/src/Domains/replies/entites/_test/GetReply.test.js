@@ -9,6 +9,7 @@ describe('GetReply entities', () => {
       username: 'John Doe',
       date: '2021-08-08T07:19:09.775Z',
       commentId: 'comment-123',
+      active: true,
     };
 
     // Action
@@ -17,6 +18,28 @@ describe('GetReply entities', () => {
     // Assert
     expect(getReply.id).toEqual(payload.id);
     expect(getReply.content).toEqual(payload.content);
+    expect(getReply.username).toEqual(payload.username);
+    expect(getReply.date).toEqual(payload.date);
+    expect(getReply.commentId).toEqual(payload.commentId);
+  });
+
+  it('should modify content when reply is not active', () => {
+    // Arrange
+    const payload = {
+      id: 'reply-123',
+      content: 'a reply',
+      username: 'John Doe',
+      date: '2021-08-08T07:19:09.775Z',
+      commentId: 'comment-123',
+      active: false,
+    };
+
+    // Action
+    const getReply = new GetReply(payload);
+
+    // Assert
+    expect(getReply.content).toEqual('**balasan telah dihapus**');
+    expect(getReply.id).toEqual(payload.id);
     expect(getReply.username).toEqual(payload.username);
     expect(getReply.date).toEqual(payload.date);
     expect(getReply.commentId).toEqual(payload.commentId);

@@ -99,8 +99,7 @@ describe('RepliesRepositoryPostgres', () => {
 
       // Additional Assert: Check persistence in the database
       const reply = await RepliesTableTestHelper.findRepliesById('reply-123');
-      expect(reply).toHaveLength(1);
-      expect(reply[0].active).toBe(false);
+      expect(reply.active).toBe(false);
     });
   });
 

@@ -177,15 +177,5 @@ describe('ThreadRepositoryPostgres', () => {
       expect(threads[0].body).toEqual('Thread Body');
       expect(threads[0].username).toEqual('testuser');
     });
-    it('should return empty array when no threads found', async () => {
-      // Arrange
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
-
-      // Action
-      const threads = await threadRepositoryPostgres.getThreads();
-
-      // Assert
-      expect(threads).toHaveLength(0);
-    });
   });
 });

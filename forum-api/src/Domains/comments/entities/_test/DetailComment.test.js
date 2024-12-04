@@ -35,12 +35,36 @@ describe('DetailComment entities', () => {
       content: 'Comment Content',
       username: 'testuser',
       date: new Date().toString(),
+      active: true,
     };
 
     // Action
     const detailComment = new DetailComment(payload);
 
     // Assert
-    expect(detailComment).toEqual(payload);
+    expect(detailComment.id).toEqual(payload.id);
+    expect(detailComment.content).toEqual(payload.content);
+    expect(detailComment.username).toEqual(payload.username);
+    expect(detailComment.date).toEqual(payload.date);
+  });
+
+  it('should modify content when comment is not active', () => {
+    // Arrange
+    const payload = {
+      id: 'comment-123',
+      content: 'Comment Content',
+      username: 'testuser',
+      date: new Date().toString(),
+      active: false,
+    };
+
+    // Action
+    const detailComment = new DetailComment(payload);
+
+    // Assert
+    expect(detailComment.content).toEqual('**komentar telah dihapus**');
+    expect(detailComment.id).toEqual(payload.id);
+    expect(detailComment.username).toEqual(payload.username);
+    expect(detailComment.date).toEqual(payload.date);
   });
 });

@@ -1,5 +1,7 @@
 const AddCommentUseCase = require('../../../../Applications/use_case/comments/AddCommentUseCase');
 const DeleteCommentUseCase = require('../../../../Applications/use_case/comments/DeleteCommentUseCase');
+const UpdateCommentUseCase = require('../../../../Applications/use_case/comments/UpdateCommentUseCase');
+const DetailCommentUseCase = require('../../../../Applications/use_case/comments/DetailCommentUseCase');
 
 
 class CommentsHandler {
@@ -9,7 +11,8 @@ class CommentsHandler {
     this.postCommentHandler = this.postCommentHandler.bind(this);
     this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
     this.putCommentHandler = this.putCommentHandler.bind(this);
-  }
+    this.getCommentHandler = this.getCommentHandler.bind(this);
+  } 
 
   async postCommentHandler(request, h) {
     const { threadId } = request.params;
@@ -40,12 +43,10 @@ class CommentsHandler {
   }
 
   async putCommentHandler(request, h) {
-    this._validator.validatePutCommentPayload(request.payload);
     const { threadId, commentId } = request.params;
     const { id: owner } = request.auth.credentials;
-
-    await this._container.verifyCommentAccess(commentId, owner);
-    const updatedComment = await this._container.updateComment(threadId, commentId, request.payload);
+    const updateCommentUseCase = this._container.getInstance(UpdateCommentUseCase.name);
+    const updatedComment = await updateCommentUseCase.execute({ threadId, commentId, owner, ...request.payload });
 
     return {
       status: 'success',
@@ -57,9 +58,11 @@ class CommentsHandler {
 
   async getCommentHandler(request, h) {
     const { threadId, commentId } = request.params;
-    const getCommentUseCase = this._container.getInstance(GetCommentUseCase.name);
-    const comment = await getCommentUseCase.execute(threadId, commentId);
-
+    const detailCommentUseCase = this._container.getInstance(DetailCommentUseCase.name);
+    console.log("threadId", threadId);
+    console.log("commentId", commentId);
+    const comment = await detailCommentUseCase.execute({ threadId, commentId });
+    console.log(comment);
     return {
       status: 'success',
       data: {

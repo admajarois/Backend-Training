@@ -9,7 +9,6 @@ class DetailThreadUseCase {
     if (threadId) {
       const thread = await this._threadRepository.getThreadById(threadId);
       const comments = await this._commentRepository.getCommentsByThreadId(threadId);
-      console.log(comments);
       const commentThread = await this._attachRepliesToComments(comments);
       thread.comments = commentThread;
       return thread;
