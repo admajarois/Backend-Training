@@ -55,6 +55,13 @@ describe('CommentRepositoryPostgres', () => {
       expect(id).toBe('comment-123');
       expect(owner).toBe('user-123');
       expect(threadId).toBe('thread-123');
+
+      // Additional Assert: Check persistence in the database
+      const persistedComment = await CommentsTableTestHelper.getCommentById('comment-123');
+      expect(persistedComment).toHaveLength(1);
+      expect(persistedComment[0].content).toBe('New Comment Content');
+      expect(persistedComment[0].owner).toBe('user-123');
+      expect(persistedComment[0].threadId).toBe('thread-123');
     }); 
   });
 

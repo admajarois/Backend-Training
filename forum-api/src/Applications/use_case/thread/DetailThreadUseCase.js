@@ -9,6 +9,7 @@ class DetailThreadUseCase {
     if (threadId) {
       const thread = await this._threadRepository.getThreadById(threadId);
       const comments = await this._commentRepository.getCommentsByThreadId(threadId);
+      console.log(comments);
       const commentThread = await this._attachRepliesToComments(comments);
       thread.comments = commentThread;
       return thread;
@@ -21,7 +22,6 @@ class DetailThreadUseCase {
   async _attachRepliesToComments(comments) {
     const commentMap = comments.map(comment => comment.id);
     const replies = await this._replyRepository.getRepliesByCommentIds(commentMap);
-
     return comments.map(comment => ({
       ...comment,
       replies: replies.filter(reply => reply.commentId === comment.id),

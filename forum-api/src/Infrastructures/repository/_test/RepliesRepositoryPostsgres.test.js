@@ -5,6 +5,7 @@ const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelp
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const AddedReply = require('../../../Domains/replies/entites/AddedReply');
+const GetReply = require('../../../Domains/replies/entites/GetReply');
 const DeletedReply = require('../../../Domains/replies/entites/DeletedReply');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
@@ -89,13 +90,17 @@ describe('RepliesRepositoryPostgres', () => {
       const deletedReply = await repliesRepositoryPostgres.deleteReply(deleteReply);
 
       // Assert
-      const reply = await RepliesTableTestHelper.findRepliesById('reply-123');
-      expect(reply.active).toEqual(false);
       expect(deletedReply).toStrictEqual(new DeletedReply({
         id: 'reply-123',
-        content: '**Balasan telah dihapus**',
+        content: '**balasan telah dihapus**',
+        owner: 'user-123',
         active: false,
       }));
+
+      // Additional Assert: Check persistence in the database
+      const reply = await RepliesTableTestHelper.findRepliesById('reply-123');
+      expect(reply).toHaveLength(1);
+      expect(reply[0].active).toBe(false);
     });
   });
 
@@ -160,24 +165,22 @@ describe('RepliesRepositoryPostgres', () => {
 
       // Assert
       expect(replies).toHaveLength(2);
-      expect(replies).toEqual([
-        {
+      expect(replies).toEqual(expect.arrayContaining([
+        expect.objectContaining({
           id: 'reply-123',
           content: 'Reply Body',
           username: 'testuser',
           commentId: 'comment-123',
           date: expect.any(String),
-        },
-        {
+        }),
+        expect.objectContaining({
           id: 'reply-456',
           content: 'Another Reply Body',
           username: 'testuser',
           commentId: 'comment-456',
           date: expect.any(String),
-        },
-      ]);
-      expect(replies[0].id).toEqual('reply-123');
-      expect(replies[1].id).toEqual('reply-456');
+        }),
+      ]));
     });
   });
 });

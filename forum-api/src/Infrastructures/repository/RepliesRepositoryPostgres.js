@@ -24,7 +24,6 @@ class RepliesRepositoryPostgres {
     if (result.rows[0].owner !== owner) {
       throw new AuthorizationError('Gagal mengakses resource');
     }
-    console.log("owner  ", result.rows[0]);
     return result.rows[0].id;
   }
 
