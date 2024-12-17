@@ -86,7 +86,6 @@ describe('UpdateThreadUseCase', () => {
     const updateThreadUseCase = new UpdateThreadUseCase({
       threadRepository: mockThreadRepository,
     });
-
     // Action and Assert
     await expect(updateThreadUseCase.execute(useCasePayload)).rejects.toThrowError('UPDATE_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });

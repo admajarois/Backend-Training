@@ -9,7 +9,7 @@ describe('DetailCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       commentId: 'comment-123',
-      username: 'user123',
+      threadId: 'thread-456',
     };
 
     const mockCommentDetail = new DetailComment({
@@ -61,6 +61,7 @@ describe('DetailCommentUseCase', () => {
       content: 'Comment Content',
       username: 'user123',
       date: '2021-08-08T07:19:09.775Z',
+      active: true,
     });
 
     const mockThreadRepository = new ThreadRepository();

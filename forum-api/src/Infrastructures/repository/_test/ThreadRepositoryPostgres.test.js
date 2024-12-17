@@ -3,6 +3,7 @@ const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
+const DeleteThread = require('../../../Domains/threads/entities/DeleteThread');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const pool = require('../../database/postgres/pool');
 
@@ -83,12 +84,13 @@ describe('ThreadRepositoryPostgres', () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
       const updatedThread = {
+        id: 'thread-123',
         title: 'Updated Title',
         body: 'Updated Body',
       };
 
       // Action
-      await threadRepositoryPostgres.updateThread('thread-123', updatedThread);
+      await threadRepositoryPostgres.updateThread(updatedThread);
       // Assert
       const threads = await ThreadsTableTestHelper.getThreadById('thread-123');
       expect(threads).toHaveLength(1);
@@ -103,7 +105,11 @@ describe('ThreadRepositoryPostgres', () => {
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action
-      await threadRepositoryPostgres.deleteThread('thread-123');
+      const deleteThread = new DeleteThread({
+        id: 'thread-123',
+        owner: 'user-123',
+      });
+      await threadRepositoryPostgres.deleteThread(deleteThread);
 
       // Assert
       const threads = await ThreadsTableTestHelper.getThreadById('thread-123');

@@ -1,5 +1,3 @@
-const DetailComment = require('../../../Domains/comments/entities/DetailComment');
-
 class DetailCommentUseCase {
   constructor({ commentRepository, threadRepository }) {
     this._commentRepository = commentRepository;
@@ -10,7 +8,7 @@ class DetailCommentUseCase {
     const { commentId } = useCasePayload;
     await this._threadRepository.verifyThreadAvailability(useCasePayload.threadId);
     const comment = await this._commentRepository.getCommentById(commentId);
-    return new DetailComment({ ...comment });
+    return comment;
   }
 }
 

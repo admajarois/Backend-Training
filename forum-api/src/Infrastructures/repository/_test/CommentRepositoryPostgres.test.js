@@ -104,12 +104,6 @@ describe('CommentRepositoryPostgres', () => {
         ])
       );
     });
-    it('should throw NotFoundError when thread not found', async () => {
-      // Arrange
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-      // Action & Assert
-      await expect(commentRepositoryPostgres.getCommentsByThreadId('thread-1545')).rejects.toThrow(NotFoundError);
-    });
   });
 
   describe('updateCommentById function', () => {
@@ -118,16 +112,17 @@ describe('CommentRepositoryPostgres', () => {
       await CommentsTableTestHelper.addComment({ 
         id: 'comment-123', 
         content: 'Comment Content', 
-        thread: 'thread-123', 
+        threadId: 'thread-123', 
         owner: 'user-123' 
       });
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
       const updatedComment = {
+        id: 'comment-123',
         content: 'Updated Comment Content',
       };
 
       // Action
-      await commentRepositoryPostgres.updateComment('comment-123', updatedComment);
+      await commentRepositoryPostgres.updateComment(updatedComment);
 
       // Assert
       const comments = await CommentsTableTestHelper.getCommentById('comment-123');

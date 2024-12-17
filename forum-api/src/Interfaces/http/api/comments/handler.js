@@ -43,10 +43,10 @@ class CommentsHandler {
   }
 
   async putCommentHandler(request, h) {
-    const { threadId, commentId } = request.params;
+    const { threadId, commentId:id } = request.params;
     const { id: owner } = request.auth.credentials;
-    const updateCommentUseCase = this._container.getInstance(UpdateCommentUseCase.name);
-    const updatedComment = await updateCommentUseCase.execute({ threadId, commentId, owner, ...request.payload });
+    const updateCommentUseCase = this._container.getInstance(UpdateCommentUseCase.name);    
+    const updatedComment = await updateCommentUseCase.execute({ threadId, id, owner, ...request.payload });
 
     return {
       status: 'success',
@@ -59,10 +59,7 @@ class CommentsHandler {
   async getCommentHandler(request, h) {
     const { threadId, commentId } = request.params;
     const detailCommentUseCase = this._container.getInstance(DetailCommentUseCase.name);
-    console.log("threadId", threadId);
-    console.log("commentId", commentId);
     const comment = await detailCommentUseCase.execute({ threadId, commentId });
-    console.log(comment);
     return {
       status: 'success',
       data: {

@@ -43,9 +43,6 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
-    if (result.rowCount === 0) {
-      throw new NotFoundError('Komentar tidak ditemukan');
-    }
     const comments = result.rows.map((comment) => {
       comment.date = comment.date.toISOString();
       return new DetailComment({ ...comment });
@@ -59,26 +56,23 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId],
     };
     const result = await this._pool.query(query);
-    console.log("result", result.rows[0]);
-    if (result.rowCount === 0) {
-      console.log("result.rowCount", result.rowCount);
+    if (!result.rows[0]) {
       throw new NotFoundError('Komentar tidak ditemukan');
     }
+
     if (result.rows[0].owner !== userId) {
-      console.log("result.rows[0].owner", result.rows[0].owner);
-      console.log("userId", userId);
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
+
     return result.rows[0].id;
   }
 
-  async updateComment(commentId, updateComment) {
-    const { content } = updateComment;
+  async updateComment(updateComment) {
+    const { content, id } = updateComment;
     const query = {
       text: 'UPDATE comments SET content = $1 WHERE id = $2 RETURNING id, content, owner',
-      values: [content, commentId],
+      values: [content, id],
     };
-
     const result = await this._pool.query(query);
     return result.rows[0];
   }
@@ -94,7 +88,8 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new NotFoundError('Comment tidak ditemukan');
     }
     result.rows[0].date = result.rows[0].date.toISOString();
-    return new DetailComment({ ...result.rows[0] });
+    const comment = result.rows[0];  
+    return new DetailComment({ ...comment });
   }
 
   async verifyCommentAvailability(commentId) {

@@ -6,9 +6,10 @@ class UpdateThreadUseCase {
   }
 
   async execute(useCasePayload) {
-    await this._threadRepository.verifyThreadAvailability(useCasePayload.id);
-    await this._threadRepository.verifyThreadAccess(useCasePayload.id, useCasePayload.owner);
-    const updateThread = new UpdateThread(useCasePayload);
+    const { id, title, body, owner } = useCasePayload;
+    await this._threadRepository.verifyThreadAvailability(id);
+    await this._threadRepository.verifyThreadAccess(id, owner);
+    const updateThread = new UpdateThread({ id, title, body, owner });
     return this._threadRepository.updateThread(updateThread);
   }
 }

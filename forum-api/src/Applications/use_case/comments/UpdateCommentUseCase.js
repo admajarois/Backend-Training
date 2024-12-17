@@ -8,12 +8,10 @@ class UpdateCommentUseCase {
 
   async execute(useCasePayload) {
     await this._threadRepository.verifyThreadAvailability(useCasePayload.threadId);
-    console.log("threadId", useCasePayload.threadId);
     await this._commentRepository.verifyCommentAccess(useCasePayload.id, useCasePayload.owner);
-    console.log("id", useCasePayload.id);
-    console.log("owner", useCasePayload.owner);
     const updateComment = new UpdateComment(useCasePayload);
-    await this._commentRepository.updateComment(updateComment);
+    const updatedComment = await this._commentRepository.updateComment(updateComment);
+    return updatedComment;
   }
 }
 

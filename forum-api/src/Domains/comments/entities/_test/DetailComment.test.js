@@ -22,6 +22,7 @@ describe('DetailComment entities', () => {
       content: 'Comment Content',
       username: 'testuser',
       date: 123,
+      active: true,
     };
 
     // Action and Assert

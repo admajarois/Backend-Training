@@ -31,8 +31,9 @@ class ThreadsHandler {
     }
 
     async detailThreadHandler(request, h) {
+        const { id: threadId } = request.params;
         const detailThreadUseCase = this._container.getInstance(DetailThreadUseCase.name);
-        const thread = await detailThreadUseCase.execute(request.params.id);
+        const thread = await detailThreadUseCase.execute(threadId);
         const response = h.response({
             status: 'success',
             data: {
@@ -43,8 +44,11 @@ class ThreadsHandler {
     }
 
     async updateThreadHandler(request, h) {
+        const owner = request.auth.credentials.id;
+        const { id: threadId } = request.params;
+        const { title, body } = request.payload;
         const updateThreadUseCase = this._container.getInstance(UpdateThreadUseCase.name);
-        const thread = await updateThreadUseCase.execute(request.params.id, request.payload);
+        const thread = await updateThreadUseCase.execute({ id: threadId, title, body, owner });
 
         const response = h.response({
             status: 'success',
@@ -56,8 +60,9 @@ class ThreadsHandler {
     }
     
     async deleteThreadHandler(request, h) {
+        const owner = request.auth.credentials.id;
         const deleteThreadUseCase = this._container.getInstance(DeleteThreadUseCase.name);
-        await deleteThreadUseCase.execute(request.params.id);
+        await deleteThreadUseCase.execute({ id: request.params.id, owner });
 
         const response = h.response({
             status: 'success',
@@ -67,7 +72,7 @@ class ThreadsHandler {
     }
 
     async getThreadsHandler(request, h) {
-        const getThreadUseCase = this._container.getInstance(GetThreadUseCase.name);
+        const getThreadUseCase = this._container.getInstance(DetailThreadUseCase.name);
         const threads = await getThreadUseCase.execute();
         const response = h.response({
             status: 'success',

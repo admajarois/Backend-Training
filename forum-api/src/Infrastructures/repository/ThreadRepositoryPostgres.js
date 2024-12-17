@@ -74,7 +74,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     return result.rows;
   }
 
-  async deleteThread(id) {
+  async deleteThread(deleteThread) {
+    const { id } = deleteThread;
     const query = {
       text: 'DELETE FROM threads WHERE id = $1',
       values: [id],
@@ -82,8 +83,8 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     await this._pool.query(query);
   }
 
-  async updateThread(id, updatedThread) {
-    const { title, body } = updatedThread;
+  async updateThread(updatedThread) {
+    const { id, title, body } = updatedThread;
     const query = {
       text: 'UPDATE threads SET title = $1, body = $2 WHERE id = $3 RETURNING id, title, body',
       values: [title, body, id],
